@@ -1,0 +1,2 @@
+barcode_id,sample_id,short_fastq_1,short_fastq_2,genome_size
+barcode01,S24,Illumina/S24EC.filtered_1P.fastq.gz,Illumina/S24EC.filtered_2P.fastq.gz,5.5m
