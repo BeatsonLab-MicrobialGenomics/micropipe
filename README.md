@@ -1,20 +1,56 @@
-**microPIPE: a pipeline for high-quality bacterial genome construction using ONT sequencing**
+**microPIPE: a pipeline for high-quality bacterial genome construction using ONT and Illumina sequencing**
 ======
 
-The pipeline has been developed to automate high-quality complete bacterial genome assembly using Oxford Nanopore Sequencing in combination with Illumina sequencing. The performance of several tools for each step of genome assembly, including basecalling, assembly, and polishing, were evaluated. The pipeline does not check for contamination (i.e. kraken). The pipeline has been validated using the high-quality complete genome for the ST131 Escherichia coli strain EC958. The pipeline is written in Nextflow and uses Singularity containers. 
+microPIPE was developed to automate high-quality complete bacterial genome assembly using Oxford Nanopore Sequencing in combination with Illumina sequencing. 
 
-The workflow below summarises the different steps of the pipeline as well as the tool selected for each step and the approximate run time (averaged over 12 E. coli isolates sequenced on a MinION flow cell). Dashed boxes correspond to optional steps in the pipeline.
+To build microPIPE we evaluated the performance of several tools at each step of bacterial genome assembly, including basecalling, assembly, and polishing. Results at each step were validated using the high-quality ST131 *Escherichia coli* strain EC958 (GenBank: HG941718.1). After appraisal of each step, we selected the best combination of tools to achieve the most consistent and best quality bacterial genome assemblies.
+
+The workflow below summarises the different steps of the pipeline (with each selected tool) and the approximate run time (using GPU basecalling, averaged over 12 *E. coli* isolates sequenced on a R9.4 MinION flow cell). Dashed boxes correspond to optional steps in the pipeline. 
+
+Micropipe has been written in Nextflow and uses Singularity containers. It can use both GPU and CPU resources. 
+
+For more information please see our preprint here: **URL for BioRxiv**
+
 
 <p align="center">
   <img src="docs/Fig_workflow.png" alt="Workflow" width="400"/>
 </p>
 
-**Usage**
-----------------
+Please note that this pipeline does not perform extensive quality assessment of the input sequencing data. Contamination and sequencing read quality should be assessed independently to avoid problems with assembly. 
+
+#Contents
+
+* [Quickstart](#quickstart)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Test data](#example-data)
+* [Optional parameters](#optional-parameters)
+* [Structure of the output folders](#structure-of-the-output-folders)
+* [Comments](#comments)
+
+
+#Quickstart
+
+1. Basecalling, demultiplexing and assembly workflow
+
+`nextflow main.nf --basecalling --demultiplexing --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --outdir /path/to/outdir/`
+
+2. Demultiplexing and assembly workflow (basecalling already complete)
+
+`nextflow main.nf --demultiplexing --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --outdir /path/to/outdir/`
+
+3. Assembly only workflow (basecalling and demultiplexing already complete)
+
+`nextflow main.nf --samplesheet /path/to/samples.csv --outdir /path/to/outdir/`
+
+
+#Installation
+
+microPIPE has been built using Nextflow and Singularity to enable ease of use and installation across different platforms. 
 
 **0. Requirements**
 
-* Nextflow >= 20.10.0
+* [Nextflow](https://www.nextflow.io/) >= 20.10.0
 
 Nextflow can be used on any POSIX compatible system (Linux, OS X, etc). It requires Bash 3.2 (or later) and Java 8 (or later, up to 15) to be installed.
 
@@ -24,15 +60,21 @@ To install Nextflow, run the command:
 
 It will create the nextflow main executable file in the current directory. Optionally, move the nextflow file to a directory accessible by your $PATH variable. 
 
-* Singularity >= 2.3 (the pipeline has been tested with version 3.4.1, 3.5.0 and 3.6.3)
+* [Singularity](https://singularity.lbl.gov/install-linux) >= 2.3 (microPIPE has been tested with version 3.4.1, 3.5.0 and 3.6.3)
 
-https://singularity.lbl.gov/install-linux
+
+**1. Installing microPIPE**
+
+microPIPE only requires the `main.nf` and `nexflow.config` files to run. You will also need to provide a samplesheet (explained below). 
+
+#Usage
 
 **1. Prepare the Nextflow configuration file**
 
-The Nextflow pipeline script is named 'main.nf'. When a pipeline script is launched, Nextflow looks for a file named **nextflow.config** in the current directory. The configuration file defines default parameters values for the pipeline and cluster settings such as the executor (ie "slurm", "local") and queues to be used (https://www.nextflow.io/docs/latest/config.html). 
+When a Nexflow pipeline script is launched, Nextflow looks for a file named **nextflow.config** in the current directory. The configuration file defines default parameters values for the pipeline and cluster settings such as the executor (e.g. "slurm", "local") and queues to be used (https://www.nextflow.io/docs/latest/config.html). 
 
-The pipeline uses separated Singularity containers for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the nextflow.config file (https://www.nextflow.io/docs/latest/singularity.html): 
+The pipeline uses separated Singularity containers for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the [nextflow.config]((https://www.nextflow.io/docs/latest/singularity.html) file: 
+
 ```
 singularity {
   enabled = true
@@ -41,13 +83,48 @@ singularity {
 }
 ```
 
-An example of configuration file can be found in the repository. 
+An example configuration file can be found in the [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
+
+**NOTE:** to use GPU resources, you must edit the `nextflow.config` file:
+
+```
+params {
+	outdir = './results'
+	basecalling = false       
+	demultiplexing = false
+	gpu = false                 <-- change this to "true"
+```
+
+Enabling GPU will result in Guppy (basecalling) and Racon processes to be completed using the GPU resource.
 
 **2. Prepare the samplesheet file (csv)**
 
-The samplesheet file (comma-separated values) defines the input fastq files (Illumina and Nanopore), barcode number, sample ID, and the estimated genome size. The header line should match the header line in the examples below. 
+The samplesheet file (comma-separated values) defines the input fastq files (Illumina [short] and Nanopore [long], and their directory path), barcode number, sample ID, and the estimated genome size (for Flye assembly). The header line should match the header line in the examples below:
 
-**3. Run the pipeline (cloud9)**
+1. If using demultiplexing:
+
+```
+barcode_id,sample_id,short_fastq_1,short_fastq_2,genome_size
+barcode01,S24,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fastq.gz,5.5m
+barcode02,S34,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
+
+```
+2. If not using demultiplexing (single isolate):
+
+```
+sample_id,short_fastq_1,short_fastq_2,genome_size
+S24,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fastq.gz,5.5m
+```
+
+3. If using assembly only:
+
+```
+barcode_id,sample_id,long_fastq,short_fastq_1,short_fastq_2,genome_size
+barcode01,S24,barcode01.fastq.gz,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fastq.gz,5.5m
+barcode02,S34,barcode02.fastq.gz,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
+```
+
+**3. Run the pipeline**
 
 The pipeline can be used to run:
 
@@ -131,8 +208,25 @@ barcode01,S24,barcode01.fastq.gz,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fa
 barcode02,S34,barcode02.fastq.gz,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
 ```
 
-**Optional parameters**
-----------------
+#Example data
+
+To test the pipeline, we have provided some [test data](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/tree/main/test_data). In here you will find:
+
+File | Description
+---|---
+S24EC_1P_test.fastq.gz | Illumina reads 1st pair
+S24EC_2P_test.fastq.gz | Illumina reads 2nd pair
+barcode01.fastq.gz | ONT fastq reads 
+samples_1.csv | sample sheet for running assembly-only pipeline
+samples_1_basecalling.csv | sample sheet for full pipeline
+samples_1_basecalling_single_isolate.csv | sample sheet for a single isolate
+
+To test the assembly-only pipeline, edit the `sample_1.csv` samplesheet to point to the correct test files. Then run:
+
+`nextflow main.nf --samplesheet /path/to/samples_1.csv --outdir /path/to/test_outdir/`
+
+
+#Optional parameters
 
 Some parameters can be added to the command line in order to include or skip some steps and modify some parameters:
 
@@ -186,8 +280,7 @@ Assembly evaluation:
 * `--quast_args`: QUAST optional parameters (default=""), see [details](http://quast.sourceforge.net/docs/manual.html#sec2.3)
 * `--quast_threads`: number of threads for QUAST (default=1)
 
-**Structure of the output folders**
-----------------
+#Structure of the output folders
 
 The pipeline will create several folders corresponding to the different steps of the pipeline. 
 The main output folder (`--outdir`) will contain the following folders:
@@ -202,6 +295,8 @@ Each sample folder will contain the following folders:
 * **4_polishing_short_reads:** Final polished assembly fasta file (sample_id_flye_polishedLR_SR.fasta)
 * **5_quast:** QUAST quality assessment report, see [details](http://quast.sourceforge.net/docs/manual.html)
 
-**Comments**
-----------------
+#Comments
+
 The pipeline has been tested using the following grid based executors: SLURM, PBS Pro and LSF.  
+
+Planned upgrades:
