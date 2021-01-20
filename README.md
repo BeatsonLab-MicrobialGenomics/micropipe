@@ -73,7 +73,7 @@ microPIPE only requires the `main.nf` and `nexflow.config` files to run. You wil
 
 When a Nexflow pipeline script is launched, Nextflow looks for a file named **nextflow.config** in the current directory. The configuration file defines default parameters values for the pipeline and cluster settings such as the executor (e.g. "slurm", "local") and queues to be used (https://www.nextflow.io/docs/latest/config.html). 
 
-The pipeline uses separated Singularity containers for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the [nextflow.config]((https://www.nextflow.io/docs/latest/singularity.html) file: 
+The pipeline uses separated Singularity containers for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the [nextflow.config](https://www.nextflow.io/docs/latest/singularity.html) file: 
 
 ```
 singularity {
@@ -83,19 +83,10 @@ singularity {
 }
 ```
 
-An example configuration file can be found in the [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
+An example configuration file can be found in this [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
 
-**NOTE:** to use GPU resources, you must edit the `nextflow.config` file:
+**NOTE:** to use **GPU** resources for basecalling and demultiplexing, use the `--gpu` flag.
 
-```
-params {
-	outdir = './results'
-	basecalling = false       
-	demultiplexing = false
-	gpu = false                 <-- change this to "true"
-```
-
-Enabling GPU will result in Guppy (basecalling and/or demultiplexing) process to be completed using the GPU resource.
 
 **2. Prepare the samplesheet file (csv)**
 
@@ -210,7 +201,7 @@ barcode02,S34,barcode02.fastq.gz,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fa
 
 # Example data
 
-To test the pipeline, we have provided some [test data](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/tree/main/test_data). In here you will find:
+To test the pipeline, we have provided some [test data](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/tree/main/test_data). In this directory you will find:
 
 File | Description
 ---|---
