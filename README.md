@@ -18,7 +18,7 @@ For more information please see our preprint here: **URL for BioRxiv**
 
 Please note that this pipeline does not perform extensive quality assessment of the input sequencing data. Contamination and sequencing read quality should be assessed independently to avoid problems with assembly. 
 
-#Contents
+# Contents
 
 * [Quickstart](#quickstart)
 * [Installation](#installation)
@@ -29,7 +29,7 @@ Please note that this pipeline does not perform extensive quality assessment of 
 * [Comments](#comments)
 
 
-#Quickstart
+# Quickstart
 
 1. Basecalling, demultiplexing and assembly workflow
 
@@ -44,7 +44,7 @@ Please note that this pipeline does not perform extensive quality assessment of 
 `nextflow main.nf --samplesheet /path/to/samples.csv --outdir /path/to/outdir/`
 
 
-#Installation
+# Installation
 
 microPIPE has been built using Nextflow and Singularity to enable ease of use and installation across different platforms. 
 
@@ -67,7 +67,7 @@ It will create the nextflow main executable file in the current directory. Optio
 
 microPIPE only requires the `main.nf` and `nexflow.config` files to run. You will also need to provide a samplesheet (explained below). 
 
-#Usage
+# Usage
 
 **1. Prepare the Nextflow configuration file**
 
@@ -95,7 +95,7 @@ params {
 	gpu = false                 <-- change this to "true"
 ```
 
-Enabling GPU will result in Guppy (basecalling) and Racon processes to be completed using the GPU resource.
+Enabling GPU will result in Guppy (basecalling and/or demultiplexing) process to be completed using the GPU resource.
 
 **2. Prepare the samplesheet file (csv)**
 
@@ -208,7 +208,7 @@ barcode01,S24,barcode01.fastq.gz,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fa
 barcode02,S34,barcode02.fastq.gz,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
 ```
 
-#Example data
+# Example data
 
 To test the pipeline, we have provided some [test data](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/tree/main/test_data). In here you will find:
 
@@ -226,7 +226,7 @@ To test the assembly-only pipeline, edit the `sample_1.csv` samplesheet to point
 `nextflow main.nf --samplesheet /path/to/samples_1.csv --outdir /path/to/test_outdir/`
 
 
-#Optional parameters
+# Optional parameters
 
 Some parameters can be added to the command line in order to include or skip some steps and modify some parameters:
 
@@ -280,7 +280,7 @@ Assembly evaluation:
 * `--quast_args`: QUAST optional parameters (default=""), see [details](http://quast.sourceforge.net/docs/manual.html#sec2.3)
 * `--quast_threads`: number of threads for QUAST (default=1)
 
-#Structure of the output folders
+# Structure of the output folders
 
 The pipeline will create several folders corresponding to the different steps of the pipeline. 
 The main output folder (`--outdir`) will contain the following folders:
@@ -295,8 +295,10 @@ Each sample folder will contain the following folders:
 * **4_polishing_short_reads:** Final polished assembly fasta file (sample_id_flye_polishedLR_SR.fasta)
 * **5_quast:** QUAST quality assessment report, see [details](http://quast.sourceforge.net/docs/manual.html)
 
-#Comments
+# Comments
 
 The pipeline has been tested using the following grid based executors: SLURM, PBS Pro and LSF.  
 
 Planned upgrades:
+- Enabling GPU resource for Racon and Medaka processes.
+
