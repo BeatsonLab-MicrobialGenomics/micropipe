@@ -3,8 +3,8 @@ process {
 	withLabel: cpu { queue = 'main' }
 	withLabel: gpu { queue = 'gpu' }
 	withLabel: big_mem { memory = 32.GB }
-	withLabel: guppy_gpu { container = 'docker://vmurigneux/guppy-gpu:3.4.3'}
-	withLabel: guppy_cpu { container = 'docker://genomicpariscentre/guppy:3.4.3' }
+	withLabel: guppy_gpu { container = 'docker://vmurigneux/guppy-gpu:3.6.1'}
+	withLabel: guppy_cpu { container = 'docker://genomicpariscentre/guppy:3.6.1' }
 	withLabel: pycoqc { container = 'docker://quay.io/biocontainers/pycoqc:2.5.0.23--py_0' }
 	withName: demultiplexing_qcat { container = 'docker://quay.io/biocontainers/qcat:1.0.1--py_0' }
 	withName: porechop { container = 'docker://quay.io/biocontainers/porechop:0.2.3_seqan2.1.1--0' }
@@ -90,6 +90,6 @@ manifest {
   author = 'Valentine Murigneux'
   description = 'Bacterial genome assembly pipeline'
   mainScript = 'main.nf'
-  version = '0.8'
+  version = '0.9'
 }
 
