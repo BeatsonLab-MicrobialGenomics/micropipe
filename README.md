@@ -250,6 +250,8 @@ Filtering:
 * `--filtering`: filtering tool: "japsa" or "filtlong" (default="japsa")
 * `--japsa_args`: Japsa optional parameters (default="--lenMin 1000 --qualMin 10"), see [details](https://japsa.readthedocs.io/en/latest/tools/jsa.np.filter.html)
 * `--filtlong_args`: Filtlong optional parameters (default="--min_length 1000 --keep_percent 90"), see [details](https://github.com/rrwick/Filtlong#full-usage)
+* `--skip_rasusa`: Skip the sub-sampling Rasusa step
+* `--rasusa_coverage`: The desired coverage to sub-sample the reads to (default=100), see [details](https://github.com/mbhall88/rasusa#-c---coverage)
 
 Assembly:
 * `--flye_args`: Flye optional parameters (default="--plasmids")

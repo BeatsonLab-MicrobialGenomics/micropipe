@@ -70,6 +70,8 @@ def helpMessage() {
 		--filtering				Filtering tool: "japsa" or "filtlong" (default="japsa")
 		--japsa_args				Japsa optional parameters (default="--lenMin 1000 --qualMin 10"), see https://japsa.readthedocs.io/en/latest/tools/jsa.np.filter.html
 		--filtlong_args 			Filtlong optional parameters (default="--min_length 1000 --keep_percent 90"), see https://github.com/rrwick/Filtlong#full-usage
+        --skip_rasusa               Skip the sub-sampling Rasusa step
+        --rasusa_coverage           The desired coverage to sub-sample the reads to (default=100)
 
 	Assembly:
 		--flye_args				Flye optional parameters (default="--plasmids")
@@ -384,6 +386,29 @@ process pycoqc {
 	"""
 }
 
+process rasusa {
+	cpus 1
+    tag "${sample}"
+	label "cpu"
+	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*.log", saveAs: { filename -> "${sample}_$filename" }
+	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
+	input:
+		tuple val(barcode), file(long_reads), val(sample), file(reads_1), file(reads_2), val(genome_size)
+	output:
+        tuple val(barcode), file("subsampled.fastq.gz"), val(sample), file(reads_1), file(reads_2), val(genome_size), emit: subsampled_fastq
+		path("rasusa.log")
+		path("rasusa_version.txt")
+	when:
+	!params.skip_rasusa
+	script:
+	"""
+	set +eu
+    rasusa --coverage ${params.rasusa_coverage} --genome-size ${genome_size} --input ${long_reads} --output subsampled.fastq.gz
+	cp .command.log rasusa.log
+	rasusa --version > rasusa_version.txt
+	"""
+}
+
 process porechop {
 	cpus "${params.porechop_threads}"
     tag "${sample}"
@@ -658,7 +683,12 @@ workflow assembly {
     ch_samplesheet
     main:
     if (!params.skip_porechop & !params.skip_filtering) {
-		porechop(ch_samplesheet)
+        if (!params.skip_rasusa) {
+            rasusa(ch_samplesheet)
+            porechop(rasusa.out.subsampled_fastq)
+        } else if (params.skip_rasusa) {
+            porechop(ch_samplesheet)
+        }
 		if (params.filtering == "japsa") {
 			japsa(porechop.out.trimmed_fastq)
 			flye(japsa.out.filtered_fastq)
@@ -667,18 +697,40 @@ workflow assembly {
 			flye(filtlong.out.filtered_fastq)
 		}
 	} else if (!params.skip_porechop & params.skip_filtering) {
-		porechop(ch_samplesheet)
+        if (!params.skip_rasusa) {
+            rasusa(ch_samplesheet)
+            porechop(rasusa.out.subsampled_fastq)
+        } else if (params.skip_rasusa) {
+            porechop(ch_samplesheet)
+        }
 		flye(porechop.out.trimmed_fastq)
 	} else if (params.skip_porechop & !params.skip_filtering) {
 		if (params.filtering == "japsa") {
-			japsa(ch_samplesheet)
-			flye(japsa.out.filtered_fastq)
+            if (!params.skip_rasusa) {
+                rasusa(ch_samplesheet)
+                japsa(rasusa.out.subsampled_fastq)
+			    flye(japsa.out.filtered_fastq)
+            } else if (params.skip_rasusa) {
+                japsa(ch_samplesheet)
+			    flye(japsa.out.filtered_fastq)
+            }
 		} else if (params.filtering == "filtlong") {
-			filtlong(ch_samplesheet)	
-            flye(filtlong.out.filtered_fastq)
+            if (!params.skip_rasusa) {
+                rasusa(ch_samplesheet)
+                filtlong(rasusa.out.subsampled_fastq)
+			    flye(filtlong.out.filtered_fastq)
+            } else if (params.skip_rasusa) {
+                filtlong(ch_samplesheet)
+			    flye(filtlong.out.filtered_fastq)
+            }
 		}
 	} else {
-		flye(ch_samplesheet)	
+        if (!params.skip_rasusa) {
+            rasusa(ch_samplesheet)
+            flye(rasusa.out.subsampled_fastq)
+        } else if (params.skip_rasusa) {
+            flye(ch_samplesheet)
+        }
 	}
 	if (params.polisher == 'medaka') {
 		racon_cpu(flye.out.assembly_out)

@@ -7,6 +7,7 @@ process {
 	withLabel: guppy_cpu { container = 'docker://genomicpariscentre/guppy:3.6.1' }
 	withLabel: pycoqc { container = 'docker://quay.io/biocontainers/pycoqc:2.5.0.23--py_0' }
 	withName: demultiplexing_qcat { container = 'docker://quay.io/biocontainers/qcat:1.0.1--py_0' }
+	withName: rasusa { container = 'docker://quay.io/biocontainers/rasusa:0.3.0--h516909a_0' }
 	withName: porechop { container = 'docker://quay.io/biocontainers/porechop:0.2.3_seqan2.1.1--0' }
    	withName: filtlong { container = 'docker://quay.io/biocontainers/filtlong:0.2.0--he513fc3_3' }
    	withName: japsa { container = 'docker://vmurigneux/japsa:latest' }
@@ -44,8 +45,10 @@ params {
 	guppy_barcoder_threads = 2
 	qcat_args = ""
 	skip_pycoqc = false
+	skip_rasusa = true
 	skip_porechop = false
 	skip_filtering = false
+	rasusa_coverage = 100
 	filtering = "japsa"
 	porechop_args = ""
 	porechop_threads = 4 
