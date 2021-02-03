@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/micropipe_logo.png" alt="Logo" width="40%"></p>
+<p align="center"><img src="docs/micropipe_logo.png" alt="Logo" width="45%"></p>
 
 **microPIPE: a pipeline for high-quality bacterial genome construction using ONT and Illumina sequencing**
 ======
@@ -86,7 +86,7 @@ singularity {
 
 An example configuration file can be found in this [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
 
-Two versions of the configuration file are available and corresponds to microPIPE v0.8 (utilizing Guppy v3.4.3) and v0.9 (utilizing Guppy v3.6.1) as referenced in the paper.  
+Two versions of the configuration file are available and correspond to microPIPE v0.8 (utilizing Guppy v3.4.3) and v0.9 (utilizing Guppy v3.6.1), as referenced in the paper.  
 
 **NOTE:** to use **GPU** resources for basecalling and demultiplexing, use the `--gpu` flag.
 
