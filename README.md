@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/micropipe_logo.png" alt="Logo" width="50%"></p>
+
 **microPIPE: a pipeline for high-quality bacterial genome construction using ONT and Illumina sequencing**
 ======
 
@@ -10,7 +12,6 @@ The workflow below summarises the different steps of the pipeline (with each sel
 Micropipe has been written in Nextflow and uses Singularity containers. It can use both GPU and CPU resources. 
 
 For more information please see our preprint here: **URL for BioRxiv**
-
 
 <p align="center">
   <img src="docs/Fig_workflow.png" alt="Workflow" width="400"/>
@@ -84,6 +85,8 @@ singularity {
 ```
 
 An example configuration file can be found in this [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
+
+Two versions of the configuration file are available and corresponds to MicroPIPE v0.8 (utilizing Guppy v3.4.3) and v0.9 (utilizing Guppy v3.6.1) as referenced in the paper.  
 
 **NOTE:** to use **GPU** resources for basecalling and demultiplexing, use the `--gpu` flag.
 
