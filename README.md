@@ -11,7 +11,7 @@ The workflow below summarises the different steps of the pipeline (with each sel
 
 Micropipe has been written in Nextflow and uses Singularity containers. It can use both GPU and CPU resources. 
 
-For more information please see our preprint here: **URL for BioRxiv**
+For more information please see our preprint here: https://www.biorxiv.org/content/10.1101/2021.02.02.429319v1
 
 <p align="center">
   <img src="docs/Fig_workflow.png" alt="Workflow" width="400"/>
