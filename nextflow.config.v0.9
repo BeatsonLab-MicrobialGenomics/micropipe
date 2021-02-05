@@ -1,7 +1,86 @@
+// Singularity containter cache. Change this as appropriate
+singularity {
+	cacheDir = "/opt/singularity_cache"
+}
+
+// Process settings. Set job scheduler if appropriate (SLURM, PBS e.g.)
+// If your job scheduler has different queues/partitions for cpu and gpu, please also set them here
 process {
-	executor='slurm'
-	withLabel: cpu { queue = 'main' }
-	withLabel: gpu { queue = 'gpu' }
+        executor='local'
+        withLabel: cpu { queue = 'main' }
+        withLabel: gpu { queue = 'gpu' }
+}
+
+// Default parameters. Commandline parameters will take priority over these
+params {
+        outdir = './results'
+        basecalling = false
+        demultiplexing = false
+        gpu = false
+        fast5 = false
+        fastq = false
+        demultiplexer = 'guppy'
+        guppy_config_gpu = "dna_r9.4.1_450bps_hac.cfg"
+        guppy_config_cpu = "dna_r9.4.1_450bps_fast.cfg"
+        kit = false
+        flowcell = false
+        guppy_gpu_device = "auto"
+        guppy_num_callers = 8
+        guppy_cpu_threads_per_caller = 1
+        guppy_basecaller_args = "--recursive --trim_barcodes -q 0"
+        guppy_barcoder_args = "--recursive --trim_barcodes -q 0"
+        guppy_barcode_kits= "SQK-RBK004"
+        guppy_barcoder_threads = 2
+        qcat_args = ""
+        skip_pycoqc = false
+        skip_rasusa = true
+        skip_porechop = false
+        skip_filtering = false
+        rasusa_coverage = 100
+        filtering = "japsa"
+        porechop_args = ""
+        porechop_threads = 4
+        japsa_args = "--lenMin 1000 --qualMin 10"
+        filtlong_args = "--min_length 1000 --keep_percent 90"
+        flye_args = "--plasmids"
+        flye_threads = 4
+        polisher = "medaka"
+        racon_nb = 4
+        racon_args = "-m 8 -x -6 -g -8 -w 500"
+        racon_threads = 4
+        medaka_model = "r941_min_high"
+        medaka_threads = 8
+        nextpolish_threads = 4
+        skip_illumina = false
+        fixstart_args = ""
+        skip_fixstart = false
+        quast_threads = 1
+        quast_args = ""
+        skip_quast = false
+}
+
+// Debug and report options
+trace {
+  enabled = true
+  file = "${params.outdir}/trace.txt"
+}
+timeline {
+  enabled = true
+  file = "${params.outdir}/timeline.html"
+}
+report {
+  enabled = true
+  file = "${params.outdir}/report.html"
+}
+dag {
+  enabled = true
+  file = "${params.outdir}/flowchart_dag.svg"
+}
+
+
+
+// Not generally user-modifiable !!!
+process {
 	withLabel: big_mem { memory = 32.GB }
 	withLabel: guppy_gpu { container = 'docker://vmurigneux/guppy-gpu:3.6.1'}
 	withLabel: guppy_cpu { container = 'docker://genomicpariscentre/guppy:3.6.1' }
@@ -21,71 +100,8 @@ process {
 
 singularity {
     enabled = true
-    autoMounts = true
-}
-
-params {
-	outdir = './results'
-	basecalling = false
-	demultiplexing = false
-	gpu = false # CHANGE THIS TO TRUE TO ENABLE GPU BASECALLING
-	fast5 = false
-	fastq = false
-	demultiplexer = 'guppy'
-	guppy_config_gpu = "dna_r9.4.1_450bps_hac.cfg"
-	guppy_config_cpu = "dna_r9.4.1_450bps_fast.cfg"
-	kit = false
-	flowcell = false
-	guppy_gpu_device = "auto"
-	guppy_num_callers = 8
-	guppy_cpu_threads_per_caller = 1
-	guppy_basecaller_args = "--recursive --trim_barcodes -q 0"
-	guppy_barcoder_args = "--recursive --trim_barcodes -q 0"
-	guppy_barcode_kits= "SQK-RBK004"
-	guppy_barcoder_threads = 2
-	qcat_args = ""
-	skip_pycoqc = false
-	skip_rasusa = true
-	skip_porechop = false
-	skip_filtering = false
-	rasusa_coverage = 100
-	filtering = "japsa"
-	porechop_args = ""
-	porechop_threads = 4 
-	japsa_args = "--lenMin 1000 --qualMin 10"
-	filtlong_args = "--min_length 1000 --keep_percent 90"
-	flye_args = "--plasmids"
-	flye_threads = 4
-	polisher = "medaka"
-	racon_nb = 4
-	racon_args = "-m 8 -x -6 -g -8 -w 500"
-	racon_threads = 4
-	medaka_model = "r941_min_high"
-	medaka_threads = 8
-	nextpolish_threads = 4
-	skip_illumina = false
-	fixstart_args = ""
-	skip_fixstart = false
-	quast_threads = 1
-	quast_args = ""
-	skip_quast = false
-}
-
-trace {
-  enabled = true
-  file = "${params.outdir}/trace.txt"
-}
-timeline {
-  enabled = true
-  file = "${params.outdir}/timeline.html"
-}
-report {
-  enabled = true
-  file = "${params.outdir}/report.html"
-}
-dag {
-  enabled = true
-  file = "${params.outdir}/flowchart_dag.svg"
+    autoMounts = false
+    runOptions = "-B \"$launchDir\" -B \"`[[ \"${params.fast5}\" =~ ^/ ]] && echo ${params.fast5} || echo ${PWD}/${params.fast5}`\" -B \"`[[ \"${params.outdir}\" =~ ^/ ]] && echo ${params.outdir} || echo ${PWD}/${params.outdir}`\""
 }
 
 manifest {
