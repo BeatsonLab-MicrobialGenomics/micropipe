@@ -7,7 +7,7 @@ nextflow.preview.dsl=2
         microPIPE - Bacterial genome construction pipeline using ONT sequencing
 ========================================================================================
  #### Documentation
- https://github.com/
+https://github.com/BeatsonLab-MicrobialGenomics/micropipe
  #### Authors
  Valentine Murigneux <v.murigneux@uq.edu.au>
 ========================================================================================
@@ -107,7 +107,6 @@ process basecalling {
 	cpus "${params.guppy_num_callers}"
 	label "gpu"
 	label "guppy_gpu"
-	containerOptions '--nv'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.txt'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.log'
 	input:
@@ -136,7 +135,6 @@ process basecalling_single_isolate {
 	cpus "${params.guppy_num_callers}"
 	label "gpu"
 	label "guppy_gpu"
-	containerOptions '--nv'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.txt'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.log'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*fastq.gz'
@@ -256,7 +254,6 @@ process basecalling_demultiplexing_guppy {
     cpus "${params.guppy_num_callers}"
     label "gpu"
     label "guppy_gpu"
-    containerOptions '--nv'
     publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
     input:
         path(fast5_dir)
@@ -319,7 +316,6 @@ process demultiplexing_guppy {
     cpus "${params.guppy_barcoder_threads}"
     label "gpu"
     label "guppy_gpu"
-    containerOptions '--nv'
     publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
     input:
         path(fastq_dir)
@@ -397,9 +393,9 @@ process rasusa {
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*.log", saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), file(long_reads), val(sample), file(reads_1), file(reads_2), val(genome_size)
+		tuple val(barcode), file(long_reads), val(sample), val(genome_size)
 	output:
-        tuple val(barcode), file("subsampled.fastq.gz"), val(sample), file(reads_1), file(reads_2), val(genome_size), emit: subsampled_fastq
+        tuple val(barcode), file("subsampled.fastq.gz"), val(sample), val(genome_size), emit: subsampled_fastq
 		path("rasusa.log")
 		path("rasusa_version.txt")
 	when:
@@ -410,8 +406,6 @@ process rasusa {
     rasusa --coverage ${params.rasusa_coverage} --genome-size ${genome_size} --input ${long_reads} --output subsampled.fastq.gz
 	cp .command.log rasusa.log
 	rasusa --version > rasusa_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -423,9 +417,9 @@ process porechop {
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*.log", saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), file(long_reads), val(sample), file(reads_1), file(reads_2), val(genome_size)
+		tuple val(barcode), file(long_reads), val(sample), val(genome_size)
 	output:
-        tuple val(barcode), file("trimmed.fastq.gz"), val(sample), file(reads_1), file(reads_2), val(genome_size), emit: trimmed_fastq
+        tuple val(barcode), file("trimmed.fastq.gz"), val(sample), val(genome_size), emit: trimmed_fastq
 		path("porechop.log")
 		path("porechop_version.txt")
 	when:
@@ -436,8 +430,6 @@ process porechop {
 	porechop -i ${long_reads} -t ${params.porechop_threads} -o trimmed.fastq.gz ${params.porechop_args}
 	cp .command.log porechop.log
 	porechop --version > porechop_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -447,17 +439,15 @@ process japsa {
     label "cpu"
     publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: '*filtered.fastq.gz', saveAs: { filename -> "${sample}_$filename" }
     input:
-        tuple val(barcode), path(trimmed), val(sample), path(reads_1), path(reads_2), val(genome_size)
+        tuple val(barcode), path(trimmed), val(sample), val(genome_size)
     output:
-        tuple val(barcode), path("filtered.fastq.gz"), val(sample), path(reads_1), path(reads_2), val(genome_size), emit: filtered_fastq
+        tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
     when:
 	!params.skip_filtering & params.filtering == 'japsa'
     script:
     """
     set +eu
     jsa.np.filter --input ${trimmed} ${params.japsa_args} --output filtered.fastq.gz
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
     """
 }
 
@@ -469,9 +459,9 @@ process filtlong {
     publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: 'filtlong.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
 	input:
-        tuple val(barcode), path(trimmed), val(sample), path(reads_1), path(reads_2), val(genome_size)
+        tuple val(barcode), path(trimmed), val(sample), val(genome_size)
     output:
-        tuple val(barcode), path("filtered.fastq.gz"), val(sample), path(reads_1), path(reads_2), val(genome_size), emit: filtered_fastq
+        tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
         path("*.log")
 		path("filtlong_version.txt")
 	when:
@@ -482,8 +472,6 @@ process filtlong {
 	filtlong ${params.filtlong_args} ${trimmed} | gzip > filtered.fastq.gz
 	cp .command.log filtlong.log
 	filtlong --version > filtlong_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
     """
 }
 
@@ -496,9 +484,9 @@ process flye {
  	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: 'flye.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: "*_version.txt"
     input:
-	tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), val(genome_size)
+	tuple val(barcode), path(filtered), val(sample), val(genome_size)
     output:
-	tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path("assembly.fasta"), path("assembly_info.txt"), path("assembly_graph.gfa"), path("assembly_graph.gv"), emit: assembly_out
+	tuple val(barcode), path(filtered), val(sample), path("assembly.fasta"), path("assembly_info.txt"), path("assembly_graph.gfa"), path("assembly_graph.gv"), emit: assembly_out
 	path("flye.log")
 	path("flye_version.txt")
     script:
@@ -506,8 +494,6 @@ process flye {
     set +eu
     flye --nano-raw ${filtered} --genome-size ${genome_size} --threads ${params.flye_threads} --out-dir \$PWD ${params.flye_args}
 	flye -v 2> flye_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
     """
 }
 
@@ -525,9 +511,9 @@ process racon_cpu {
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(assembly), path(info), path(gfa), path(gv)
+		tuple val(barcode), path(filtered), val(sample), path(assembly), path(info), path(gfa), path(gv)
 	output:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path("${prefix}_${raconv}_${params.racon_nb}.fasta"), emit: polished_racon
+		tuple val(barcode), path(filtered), val(sample), path("${prefix}_${raconv}_${params.racon_nb}.fasta"), emit: polished_racon
 		path("racon.log")
 		path("racon_version.txt")
 	when:
@@ -546,8 +532,6 @@ process racon_cpu {
 	done
 	cp .command.log racon.log
 	racon --version > racon_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -560,9 +544,9 @@ process medaka_cpu {
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: "*_version.txt"	
     input:
-	tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(draft)
+	tuple val(barcode), path(filtered), val(sample), path(draft)
     output:
-	tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path ("consensus.fasta"), emit: polished_medaka
+	tuple val(barcode), path(filtered), val(sample), path ("consensus.fasta"), emit: polished_medaka
 	path("medaka.log")
 	path("medaka_version.txt")
     when:
@@ -574,8 +558,6 @@ process medaka_cpu {
 	rm consensus_probs.hdf calls_to_draft.bam calls_to_draft.bam.bai
 	cp .command.log medaka.log
 	medaka --version > medaka_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -588,9 +570,9 @@ process nextpolish_LR {
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(assembly), path(info), path(gfa), path(gv)
+		tuple val(barcode), path(filtered), val(sample), path(assembly), path(info), path(gfa), path(gv)
 	output:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path ("${sample}_${prefix_lr}.fasta"), emit: polished_LR
+		tuple val(barcode), path(filtered), val(sample), path ("${sample}_${prefix_lr}.fasta"), emit: polished_LR
 		path("nextpolish_LR.log")
 		path("nextpolish_version.txt")
 	when:
@@ -606,8 +588,6 @@ process nextpolish_LR {
 	rm -r 00.lgs_polish 01.lgs_polish
 	cp .command.log nextpolish_LR.log
 	nextPolish --version 2> nextpolish_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -620,9 +600,9 @@ process nextpolish {
 	publishDir "$params.outdir/$sample/4_polishing_short_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/4_polishing_short_reads",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(draft)
+		tuple val(barcode), path(filtered), val(sample), path(draft), path(reads_1), path(reads_2)
 	output:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path ("${sample}_${prefix_lr_sr}_2.fasta"), emit: polished_SR
+		tuple val(barcode), path(filtered), val(sample), path ("${sample}_${prefix_lr_sr}_2.fasta"), emit: polished_SR
 		path("nextpolish.log")
 		path("nextpolish_version.txt")
 	when:
@@ -649,16 +629,14 @@ process fixstart {
 	publishDir "$params.outdir/$sample/4_polishing_short_reads",  mode: 'copy', pattern: '*fixstart.fasta', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/4_polishing_short_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(polished)
+		tuple val(barcode), path(filtered), val(sample), path(polished)
 	output:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path ("${prefix_lr_sr}_fixstart.fasta"), emit: polished_fixstart 
+		tuple val(barcode), path(filtered), val(sample), path ("${prefix_lr_sr}_fixstart.fasta"), emit: polished_fixstart 
 		path("*log")
 	script:
 	"""
 	set +eu
 	circlator fixstart ${params.fixstart_args} ${polished} ${prefix_lr_sr}_fixstart
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -669,16 +647,14 @@ process fixstart_LR {
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*fixstart.fasta', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(polished)
+		tuple val(barcode), path(filtered), val(sample), path(polished)
 	output:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path ("${prefix_lr}_fixstart.fasta"), emit: polished_fixstart 
+		tuple val(barcode), path(filtered), val(sample), path ("${prefix_lr}_fixstart.fasta"), emit: polished_fixstart 
 		path("*log")
 	script:
 	"""
 	set +eu
 	circlator fixstart ${params.fixstart_args} ${polished} ${prefix_lr}_fixstart
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
@@ -690,7 +666,7 @@ process quast {
 	publishDir "$params.outdir/$sample/5_quast",  mode: 'copy', pattern: 'quast.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/5_quast",  mode: 'copy', pattern: "*_version.txt"
 	input:
-		tuple val(barcode), path(filtered), val(sample), path(reads_1), path(reads_2), path(polished)
+		tuple val(barcode), path(filtered), val(sample), path(polished)
 	output:
 		tuple path("report.txt"), path("report.html"), path("report.tsv"), path("report.pdf"), path("quast.log"), emit: quast_out
 		path("quast_version.txt")
@@ -699,14 +675,13 @@ process quast {
 	set +eu
 	quast.py -o \$PWD -t ${params.quast_threads} -l ${sample} ${polished} ${params.quast_args}
 	quast --version > quast_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
 	"""
 }
 
 workflow assembly {
     take: 
     ch_samplesheet
+    ch_samplesheet_illumina
     main:
     if (!params.skip_porechop & !params.skip_filtering) {
         if (!params.skip_rasusa) {
@@ -762,7 +737,7 @@ workflow assembly {
 		racon_cpu(flye.out.assembly_out)
 		medaka_cpu(racon_cpu.out.polished_racon)
 		if (!params.skip_illumina) {
-			nextpolish(medaka_cpu.out.polished_medaka)
+			nextpolish(medaka_cpu.out.polished_medaka.combine (ch_samplesheet_illumina, by: 0))
             if (params.skip_fixstart) {
 				quast(nextpolish.out.polished_SR)
             }
@@ -784,7 +759,7 @@ workflow assembly {
 	else if (params.polisher == 'nextpolish') {
 		nextpolish_LR(flye.out.assembly_out)
 		if (!params.skip_illumina) {
-			nextpolish(nextpolish_LR.out.polished_LR)
+			nextpolish(nextpolish_LR.out.polished_LR.combine (ch_samplesheet_illumina, by: 0))
             if (params.skip_fixstart) {
 				quast(nextpolish.out.polished_SR)
             }
@@ -806,12 +781,26 @@ workflow assembly {
 }
 
 workflow {
+	//basecalling, demultiplexing and assembly workflow
 	if( params.basecalling && params.demultiplexing) {
-		Channel.
-		fromPath( "${params.samplesheet}", checkIfExists:true )
-		.splitCsv(header:true, sep:',')
-		.map { row -> tuple(row.barcode_id, row.sample_id, file(row.short_fastq_1, checkIfExists: false), file(row.short_fastq_2, checkIfExists: false), row.genome_size) }
-		.set { ch_samplesheet_basecalling }	
+        if ( !params.skip_illumina ) {
+	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+            ch_samplesheet_basecalling.view()
+ 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')          
+            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+            .set { ch_samplesheet_illumina }
+            ch_samplesheet_illumina.view()
+        } else {
+          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+            ch_samplesheet_basecalling.view()
+        }
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
 			if( params.gpu ) {
@@ -840,13 +829,30 @@ workflow {
 			ch_fastq.view()
 			ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
 		}
-        assembly( ch_data )
+		if ( !params.skip_illumina ) {
+        	assembly( ch_data, ch_samplesheet_illumina)
+		} else {
+			assembly( ch_data, Channel.empty() )
+		}
+	//basecalling and assembly workflow (single isolate)
 	} else if( params.basecalling && !params.demultiplexing) {
-		Channel.
-		fromPath( "${params.samplesheet}", checkIfExists:true )
-		.splitCsv(header:true, sep:',')
-		.map { row -> tuple(row.sample_id, file(row.short_fastq_1, checkIfExists: false), file(row.short_fastq_2, checkIfExists: false), row.genome_size) }
-		.set { ch_samplesheet_basecalling }
+        if ( !params.skip_illumina ) {
+	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+            ch_samplesheet_basecalling.view()
+ 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')          
+            .map { row -> tuple(row.sample_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+            .set { ch_samplesheet_illumina }
+            ch_samplesheet_illumina.view()
+        } else {
+            Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+        }
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		ch_sample = ch_samplesheet_basecalling.first().map { it[0] }
 		ch_fast5 = fast5.concat( ch_sample ).collect()
@@ -861,15 +867,35 @@ workflow {
 			ch_fastq=basecalling_cpu_single_isolate.out.basecalled_fastq.map { file -> tuple(file.simpleName, file) }.transpose()
 		}
 		ch_fastq.view()
-		ch_data = ch_fastq.concat( ch_samplesheet_basecalling ).collect()
-		ch_data.view()
-        assembly( ch_data )
+        if ( !params.skip_illumina ) {
+			ch_data = ch_fastq.concat( ch_samplesheet_basecalling ).collect()
+			ch_data.view()
+        	assembly( ch_data, ch_samplesheet_illumina )
+		} else {
+			ch_data = ch_fastq.concat( ch_samplesheet_basecalling ).collect()
+		    ch_data.view()
+            assembly( ch_data, Channel.empty() )
+        }
+	//demultiplexing and assembly workflow
 	} else if ( !params.basecalling && params.demultiplexing ){
-		Channel.
-		fromPath( "${params.samplesheet}", checkIfExists:true )
-		.splitCsv(header:true, sep:',')
-		.map { row -> tuple(row.barcode_id, row.sample_id, file(row.short_fastq_1, checkIfExists: false), file(row.short_fastq_2, checkIfExists: false), row.genome_size) }
-		.set { ch_samplesheet_basecalling }
+        if ( !params.skip_illumina ) {
+	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+            ch_samplesheet_basecalling.view()
+ 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')          
+            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+            .set { ch_samplesheet_illumina }
+            ch_samplesheet_illumina.view()
+        } else {
+          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet_basecalling }
+            ch_samplesheet_basecalling.view()
+        }
 		fastq = Channel.fromPath("${params.fastq}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
 			demultiplexing_qcat(fastq)
@@ -884,16 +910,36 @@ workflow {
 			}
 		}
 		ch_fastq.view()
-		ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
-		ch_data.view()
-        assembly( ch_data )
+        if ( !params.skip_illumina ) {
+        	ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
+		    ch_data.view()
+            assembly( ch_data, ch_samplesheet_illumina)
+        } else {
+		    ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
+		    ch_data.view()
+            assembly( ch_data, Channel.empty() )
+        }
+	//assembly only workflow
 	} else if ( !params.basecalling && !params.demultiplexing ) {
-		Channel.
-		fromPath( "${params.samplesheet}", checkIfExists:true )
-		.splitCsv(header:true, sep:',')
-		.map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, file(row.short_fastq_1, checkIfExists: false), file(row.short_fastq_2, checkIfExists: false), row.genome_size) }
-		.set { ch_samplesheet }
-		ch_samplesheet.view()
-		assembly( ch_samplesheet )
+        if ( !params.skip_illumina ) {
+		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet }
+            ch_samplesheet.view()
+ 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')          
+            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+            .set { ch_samplesheet_illumina }
+            ch_samplesheet_illumina.view()
+            assembly( ch_samplesheet, ch_samplesheet_illumina )
+        } else {
+          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		    .splitCsv(header:true, sep:',')
+		    .map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
+		    .set { ch_samplesheet }
+            ch_samplesheet.view()
+            assembly( ch_samplesheet, Channel.empty() )
+        }
 	}
 }
