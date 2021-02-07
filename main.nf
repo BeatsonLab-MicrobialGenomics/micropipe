@@ -410,8 +410,8 @@ process rasusa {
     rasusa --coverage ${params.rasusa_coverage} --genome-size ${genome_size} --input ${long_reads} --output subsampled.fastq.gz
 	cp .command.log rasusa.log
 	rasusa --version > rasusa_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -436,8 +436,8 @@ process porechop {
 	porechop -i ${long_reads} -t ${params.porechop_threads} -o trimmed.fastq.gz ${params.porechop_args}
 	cp .command.log porechop.log
 	porechop --version > porechop_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -456,8 +456,8 @@ process japsa {
     """
     set +eu
     jsa.np.filter --input ${trimmed} ${params.japsa_args} --output filtered.fastq.gz
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
     """
 }
 
@@ -482,8 +482,8 @@ process filtlong {
 	filtlong ${params.filtlong_args} ${trimmed} | gzip > filtered.fastq.gz
 	cp .command.log filtlong.log
 	filtlong --version > filtlong_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
     """
 }
 
@@ -506,8 +506,8 @@ process flye {
     set +eu
     flye --nano-raw ${filtered} --genome-size ${genome_size} --threads ${params.flye_threads} --out-dir \$PWD ${params.flye_args}
 	flye -v 2> flye_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
     """
 }
 
@@ -546,8 +546,8 @@ process racon_cpu {
 	done
 	cp .command.log racon.log
 	racon --version > racon_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -574,8 +574,8 @@ process medaka_cpu {
 	rm consensus_probs.hdf calls_to_draft.bam calls_to_draft.bam.bai
 	cp .command.log medaka.log
 	medaka --version > medaka_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -606,8 +606,8 @@ process nextpolish_LR {
 	rm -r 00.lgs_polish 01.lgs_polish
 	cp .command.log nextpolish_LR.log
 	nextPolish --version 2> nextpolish_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -657,8 +657,8 @@ process fixstart {
 	"""
 	set +eu
 	circlator fixstart ${params.fixstart_args} ${polished} ${prefix_lr_sr}_fixstart
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -677,8 +677,8 @@ process fixstart_LR {
 	"""
 	set +eu
 	circlator fixstart ${params.fixstart_args} ${polished} ${prefix_lr}_fixstart
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
@@ -699,8 +699,8 @@ process quast {
 	set +eu
 	quast.py -o \$PWD -t ${params.quast_threads} -l ${sample} ${polished} ${params.quast_args}
 	quast --version > quast_version.txt
-[ ! -f ${reads_1} ] && touch ${reads_1}
-[ ! -f ${reads_2} ] && touch ${reads_2}
+[ ! -f ${reads_1} ] && touch ${reads_1} || true
+[ ! -f ${reads_2} ] && touch ${reads_2} || true
 	"""
 }
 
