@@ -783,23 +783,17 @@ workflow assembly {
 workflow {
 	//basecalling, demultiplexing and assembly workflow
 	if( params.basecalling && params.demultiplexing) {
+	    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		.splitCsv(header:true, sep:',')
+		.map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		.set { ch_samplesheet_basecalling }
+        ch_samplesheet_basecalling.view()
         if ( !params.skip_illumina ) {
-	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
-            ch_samplesheet_basecalling.view()
  		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		    .splitCsv(header:true, sep:',')          
             .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
             .set { ch_samplesheet_illumina }
             ch_samplesheet_illumina.view()
-        } else {
-          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
-            ch_samplesheet_basecalling.view()
         }
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
@@ -836,22 +830,17 @@ workflow {
 		}
 	//basecalling and assembly workflow (single isolate)
 	} else if( params.basecalling && !params.demultiplexing) {
+        Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		.splitCsv(header:true, sep:',')
+		.map { row -> tuple(row.sample_id, row.genome_size) }
+		.set { ch_samplesheet_basecalling }
+		ch_samplesheet_basecalling.view()
         if ( !params.skip_illumina ) {
-	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
-            ch_samplesheet_basecalling.view()
  		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		    .splitCsv(header:true, sep:',')          
             .map { row -> tuple(row.sample_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
             .set { ch_samplesheet_illumina }
             ch_samplesheet_illumina.view()
-        } else {
-            Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
         }
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		ch_sample = ch_samplesheet_basecalling.first().map { it[0] }
@@ -878,24 +867,18 @@ workflow {
         }
 	//demultiplexing and assembly workflow
 	} else if ( !params.basecalling && params.demultiplexing ){
+		Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		.splitCsv(header:true, sep:',')
+		.map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
+		.set { ch_samplesheet_basecalling }
+    	ch_samplesheet_basecalling.view()
         if ( !params.skip_illumina ) {
-	    	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
-            ch_samplesheet_basecalling.view()
  		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		    .splitCsv(header:true, sep:',')          
             .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
             .set { ch_samplesheet_illumina }
             ch_samplesheet_illumina.view()
-        } else {
-          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet_basecalling }
-            ch_samplesheet_basecalling.view()
-        }
+		}
 		fastq = Channel.fromPath("${params.fastq}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
 			demultiplexing_qcat(fastq)
@@ -910,23 +893,21 @@ workflow {
 			}
 		}
 		ch_fastq.view()
-        if ( !params.skip_illumina ) {
-        	ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
-		    ch_data.view()
-            assembly( ch_data, ch_samplesheet_illumina)
-        } else {
-		    ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
-		    ch_data.view()
-            assembly( ch_data, Channel.empty() )
-        }
+		ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
+		ch_data.view()
+		if ( !params.skip_illumina ) {
+			assembly( ch_data, ch_samplesheet_illumina)
+		} else {
+			assembly( ch_data, Channel.empty() )
+		}
 	//assembly only workflow
 	} else if ( !params.basecalling && !params.demultiplexing ) {
+		Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		.splitCsv(header:true, sep:',')
+		.map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
+		.set { ch_samplesheet }
+		ch_samplesheet.view()
         if ( !params.skip_illumina ) {
-		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet }
-            ch_samplesheet.view()
  		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		    .splitCsv(header:true, sep:',')          
             .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
@@ -934,11 +915,6 @@ workflow {
             ch_samplesheet_illumina.view()
             assembly( ch_samplesheet, ch_samplesheet_illumina )
         } else {
-          	Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')
-		    .map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
-		    .set { ch_samplesheet }
-            ch_samplesheet.view()
             assembly( ch_samplesheet, Channel.empty() )
         }
 	}
