@@ -16,7 +16,7 @@ https://github.com/BeatsonLab-MicrobialGenomics/micropipe
 def helpMessage() {
 	log.info"""
 	=========================================
-	microPIPE v${params.version}
+	microPIPE v${v${workflow.manifest.version}
 	=========================================
 	Usage:
 	Basecalling, demultiplexing and assembly workflow:
@@ -679,16 +679,16 @@ process quast {
 }
 
 workflow assembly {
-    take: 
-    ch_samplesheet
-    ch_samplesheet_illumina
-    main:
-    if (!params.skip_porechop & !params.skip_filtering) {
-        if (!params.skip_rasusa) {
-            rasusa(ch_samplesheet)
-            porechop(rasusa.out.subsampled_fastq)
-        } else if (params.skip_rasusa) {
-            porechop(ch_samplesheet)
+	take: 
+	ch_samplesheet
+	ch_samplesheet_illumina
+	main:
+	if (!params.skip_porechop & !params.skip_filtering) {
+		if (!params.skip_rasusa) {
+			rasusa(ch_samplesheet)
+			porechop(rasusa.out.subsampled_fastq)
+		} else if (params.skip_rasusa) {
+			porechop(ch_samplesheet)
 		}
 		if (params.filtering == "japsa") {
 			japsa(porechop.out.trimmed_fastq)
@@ -753,7 +753,7 @@ workflow assembly {
 			else if (!params.skip_fixstart) {
 				fixstart_LR(medaka_cpu.out.polished_medaka)
 				quast(fixstart_LR.out.polished_fixstart)
-    		}
+			}
 		}
 	}
 	else if (params.polisher == 'nextpolish') {
