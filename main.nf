@@ -124,7 +124,7 @@ process basecalling {
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
 		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
 	elif if [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
 	guppy_basecaller --version > guppy_basecaller_version.txt
@@ -151,9 +151,9 @@ process basecalling_single_isolate {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
 	cat *.fastq > ${sample}.fastq
@@ -222,15 +222,15 @@ process basecalling_cpu_single_isolate {
 }
 
 process demultiplexing_qcat {
-    cpus 1
-    label "cpu"
-    publishDir "$params.outdir/0_basecalling",  mode: 'copy'
-    input:
-        path(fastq)
-    output:
-        path "*fastq.gz", emit: demultiplexed_fastq
+	cpus 1
+	label "cpu"
+	publishDir "$params.outdir/0_basecalling",  mode: 'copy'
+	input:
+		path(fastq)
+	output:
+		path "*fastq.gz", emit: demultiplexed_fastq
 		path("qcat.log")
-		path("qcat_version.txt")
+	path("qcat_version.txt")
 	when:
 	params.demultiplexer == 'qcat'
 	script:
@@ -282,11 +282,11 @@ process basecalling_demultiplexing_guppy {
 }
 
 process basecalling_demultiplexing_guppy_cpu {
-    cpus "${params.guppy_num_callers}"
-    label "cpu"
-    label "guppy_cpu"
-    publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
-    input:
+	cpus "${params.guppy_num_callers}"
+	label "cpu"
+	label "guppy_cpu"
+	publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
+	input:
 		path(fast5_dir)
 	output:
 		path "sequencing_summary.txt", emit: sequencing_summary
@@ -388,7 +388,7 @@ process pycoqc {
 
 process rasusa {
 	cpus 1
-    tag "${sample}"
+	tag "${sample}"
 	label "cpu"
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*.log", saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
@@ -689,7 +689,7 @@ workflow assembly {
             porechop(rasusa.out.subsampled_fastq)
         } else if (params.skip_rasusa) {
             porechop(ch_samplesheet)
-        }
+		}
 		if (params.filtering == "japsa") {
 			japsa(porechop.out.trimmed_fastq)
 			flye(japsa.out.filtered_fastq)
@@ -698,84 +698,84 @@ workflow assembly {
 			flye(filtlong.out.filtered_fastq)
 		}
 	} else if (!params.skip_porechop & params.skip_filtering) {
-        if (!params.skip_rasusa) {
-            rasusa(ch_samplesheet)
-            porechop(rasusa.out.subsampled_fastq)
-        } else if (params.skip_rasusa) {
-            porechop(ch_samplesheet)
-        }
+		if (!params.skip_rasusa) {
+			rasusa(ch_samplesheet)
+			porechop(rasusa.out.subsampled_fastq)
+		} else if (params.skip_rasusa) {
+			porechop(ch_samplesheet)
+		}
 		flye(porechop.out.trimmed_fastq)
 	} else if (params.skip_porechop & !params.skip_filtering) {
 		if (params.filtering == "japsa") {
-            if (!params.skip_rasusa) {
-                rasusa(ch_samplesheet)
-                japsa(rasusa.out.subsampled_fastq)
-			    flye(japsa.out.filtered_fastq)
-            } else if (params.skip_rasusa) {
-                japsa(ch_samplesheet)
-			    flye(japsa.out.filtered_fastq)
-            }
+			if (!params.skip_rasusa) {
+				rasusa(ch_samplesheet)
+				japsa(rasusa.out.subsampled_fastq)
+				flye(japsa.out.filtered_fastq)
+			} else if (params.skip_rasusa) {
+				japsa(ch_samplesheet)
+				flye(japsa.out.filtered_fastq)
+			}
 		} else if (params.filtering == "filtlong") {
-            if (!params.skip_rasusa) {
-                rasusa(ch_samplesheet)
-                filtlong(rasusa.out.subsampled_fastq)
-			    flye(filtlong.out.filtered_fastq)
-            } else if (params.skip_rasusa) {
-                filtlong(ch_samplesheet)
-			    flye(filtlong.out.filtered_fastq)
+			if (!params.skip_rasusa) {
+				rasusa(ch_samplesheet)
+				filtlong(rasusa.out.subsampled_fastq)
+				flye(filtlong.out.filtered_fastq)
+			} else if (params.skip_rasusa) {
+				filtlong(ch_samplesheet)
+				flye(filtlong.out.filtered_fastq)
             }
 		}
 	} else {
-        if (!params.skip_rasusa) {
-            rasusa(ch_samplesheet)
-            flye(rasusa.out.subsampled_fastq)
-        } else if (params.skip_rasusa) {
-            flye(ch_samplesheet)
-        }
+		if (!params.skip_rasusa) {
+			rasusa(ch_samplesheet)
+			flye(rasusa.out.subsampled_fastq)
+		} else if (params.skip_rasusa) {
+			flye(ch_samplesheet)
+		}
 	}
 	if (params.polisher == 'medaka') {
 		racon_cpu(flye.out.assembly_out)
 		medaka_cpu(racon_cpu.out.polished_racon)
 		if (!params.skip_illumina) {
 			nextpolish(medaka_cpu.out.polished_medaka.combine (ch_samplesheet_illumina, by: 0))
-            if (params.skip_fixstart) {
-				quast(nextpolish.out.polished_SR)
-            }
-            else if (!params.skip_fixstart) {
-                fixstart(nextpolish.out.polished_SR)
-                quast(fixstart.out.polished_fixstart)
-            }
+			if (params.skip_fixstart) {
+			quast(nextpolish.out.polished_SR)
+			}
+			else if (!params.skip_fixstart) {
+				fixstart(nextpolish.out.polished_SR)
+				quast(fixstart.out.polished_fixstart)
+			}
 		}
 		else if (params.skip_illumina) {
-            if (params.skip_fixstart) {
+			if (params.skip_fixstart) {
 				quast(medaka_cpu.out.polished_medaka)
-            }
-            else if (!params.skip_fixstart) {
-                fixstart_LR(medaka_cpu.out.polished_medaka)
-                quast(fixstart_LR.out.polished_fixstart)
-            }
+			}
+			else if (!params.skip_fixstart) {
+				fixstart_LR(medaka_cpu.out.polished_medaka)
+				quast(fixstart_LR.out.polished_fixstart)
+    		}
 		}
-    }
+	}
 	else if (params.polisher == 'nextpolish') {
 		nextpolish_LR(flye.out.assembly_out)
 		if (!params.skip_illumina) {
 			nextpolish(nextpolish_LR.out.polished_LR.combine (ch_samplesheet_illumina, by: 0))
-            if (params.skip_fixstart) {
+			if (params.skip_fixstart) {
 				quast(nextpolish.out.polished_SR)
-            }
-            else if (!params.skip_fixstart) {
-                fixstart(nextpolish.out.polished_SR)
-                quast(fixstart.out.polished_fixstart)
-            }
-        }
+			}
+			else if (!params.skip_fixstart) {
+				fixstart(nextpolish.out.polished_SR)
+				quast(fixstart.out.polished_fixstart)
+			}
+		}
 		else if (params.skip_illumina) {
-            if (params.skip_fixstart) {
+			if (params.skip_fixstart) {
 				quast(nextpolish_LR.out.polished_LR)
-            }
-            else if (!params.skip_fixstart) {
-                fixstart_LR(nextpolish_LR.out.polished_LR)
-                quast(fixstart_LR.out.polished_fixstart)
-            }
+			}
+			else if (!params.skip_fixstart) {
+				fixstart_LR(nextpolish_LR.out.polished_LR)
+				quast(fixstart_LR.out.polished_fixstart)
+			}
 		}
 	}
 }
@@ -783,18 +783,18 @@ workflow assembly {
 workflow {
 	//basecalling, demultiplexing and assembly workflow
 	if( params.basecalling && params.demultiplexing) {
-	    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		.splitCsv(header:true, sep:',')
 		.map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
 		.set { ch_samplesheet_basecalling }
-        ch_samplesheet_basecalling.view()
-        if ( !params.skip_illumina ) {
- 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')          
-            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
-            .set { ch_samplesheet_illumina }
-            ch_samplesheet_illumina.view()
-        }
+		ch_samplesheet_basecalling.view()
+		if ( !params.skip_illumina ) {
+			Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+			.splitCsv(header:true, sep:',')          
+			.map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+			.set { ch_samplesheet_illumina }
+			ch_samplesheet_illumina.view()
+		}
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
 			if( params.gpu ) {
@@ -824,24 +824,24 @@ workflow {
 			ch_data=ch_fastq.combine(ch_samplesheet_basecalling, by: 0)
 		}
 		if ( !params.skip_illumina ) {
-        	assembly( ch_data, ch_samplesheet_illumina)
+			assembly( ch_data, ch_samplesheet_illumina)
 		} else {
 			assembly( ch_data, Channel.empty() )
 		}
 	//basecalling and assembly workflow (single isolate)
 	} else if( params.basecalling && !params.demultiplexing) {
-        Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+		Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		.splitCsv(header:true, sep:',')
 		.map { row -> tuple(row.sample_id, row.genome_size) }
 		.set { ch_samplesheet_basecalling }
 		ch_samplesheet_basecalling.view()
-        if ( !params.skip_illumina ) {
- 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')          
-            .map { row -> tuple(row.sample_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
-            .set { ch_samplesheet_illumina }
-            ch_samplesheet_illumina.view()
-        }
+		if ( !params.skip_illumina ) {
+			Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+			.splitCsv(header:true, sep:',')          
+			.map { row -> tuple(row.sample_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+			.set { ch_samplesheet_illumina }
+			ch_samplesheet_illumina.view()
+		}
 		fast5 = Channel.fromPath("${params.fast5}", checkIfExists: true )
 		ch_sample = ch_samplesheet_basecalling.first().map { it[0] }
 		ch_fast5 = fast5.concat( ch_sample ).collect()
@@ -856,28 +856,28 @@ workflow {
 			ch_fastq=basecalling_cpu_single_isolate.out.basecalled_fastq.map { file -> tuple(file.simpleName, file) }.transpose()
 		}
 		ch_fastq.view()
-        if ( !params.skip_illumina ) {
+		if ( !params.skip_illumina ) {
 			ch_data = ch_fastq.concat( ch_samplesheet_basecalling ).collect()
 			ch_data.view()
-        	assembly( ch_data, ch_samplesheet_illumina )
+			assembly( ch_data, ch_samplesheet_illumina )
 		} else {
 			ch_data = ch_fastq.concat( ch_samplesheet_basecalling ).collect()
-		    ch_data.view()
-            assembly( ch_data, Channel.empty() )
-        }
+			ch_data.view()
+			assembly( ch_data, Channel.empty() )
+		}
 	//demultiplexing and assembly workflow
 	} else if ( !params.basecalling && params.demultiplexing ){
 		Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
 		.splitCsv(header:true, sep:',')
 		.map { row -> tuple(row.barcode_id, row.sample_id, row.genome_size) }
 		.set { ch_samplesheet_basecalling }
-    	ch_samplesheet_basecalling.view()
-        if ( !params.skip_illumina ) {
- 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')          
-            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
-            .set { ch_samplesheet_illumina }
-            ch_samplesheet_illumina.view()
+		ch_samplesheet_basecalling.view()
+		if ( !params.skip_illumina ) {
+			Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+			.splitCsv(header:true, sep:',')          
+			.map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+			.set { ch_samplesheet_illumina }
+			ch_samplesheet_illumina.view()
 		}
 		fastq = Channel.fromPath("${params.fastq}", checkIfExists: true )
 		if( params.demultiplexer == "qcat") {
@@ -907,15 +907,15 @@ workflow {
 		.map { row -> tuple(row.barcode_id, file(row.long_fastq, checkIfExists: true), row.sample_id, row.genome_size) }
 		.set { ch_samplesheet }
 		ch_samplesheet.view()
-        if ( !params.skip_illumina ) {
- 		    Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
-		    .splitCsv(header:true, sep:',')          
-            .map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
-            .set { ch_samplesheet_illumina }
-            ch_samplesheet_illumina.view()
-            assembly( ch_samplesheet, ch_samplesheet_illumina )
-        } else {
-            assembly( ch_samplesheet, Channel.empty() )
-        }
+		if ( !params.skip_illumina ) {
+			Channel.fromPath( "${params.samplesheet}", checkIfExists:true )
+			.splitCsv(header:true, sep:',')          
+			.map { row -> tuple(row.barcode_id, file(row.short_fastq_1, checkIfExists: true), file(row.short_fastq_2, checkIfExists: true)) }
+			.set { ch_samplesheet_illumina }
+			ch_samplesheet_illumina.view()
+			assembly( ch_samplesheet, ch_samplesheet_illumina )
+		} else {
+			assembly( ch_samplesheet, Channel.empty() )
+		}
 	}
 }
