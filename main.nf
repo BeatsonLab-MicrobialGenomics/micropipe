@@ -70,8 +70,8 @@ def helpMessage() {
 		--filtering				Filtering tool: "japsa" or "filtlong" (default="japsa")
 		--japsa_args				Japsa optional parameters (default="--lenMin 1000 --qualMin 10"), see https://japsa.readthedocs.io/en/latest/tools/jsa.np.filter.html
 		--filtlong_args 			Filtlong optional parameters (default="--min_length 1000 --keep_percent 90"), see https://github.com/rrwick/Filtlong#full-usage
-        --skip_rasusa               Skip the sub-sampling Rasusa step
-        --rasusa_coverage           The desired coverage to sub-sample the reads to (default=100)
+		--skip_rasusa				Skip the sub-sampling Rasusa step
+		--rasusa_coverage			The desired coverage to sub-sample the reads to (default=100)
 
 	Assembly:
 		--flye_args				Flye optional parameters (default="--plasmids")
@@ -121,9 +121,9 @@ process basecalling {
 	script:
 	"""
 	set +eu
-    if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-    	guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
-    elif if [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
+	elif if [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
         guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
@@ -152,7 +152,7 @@ process basecalling_single_isolate {
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
         guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
-     elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
         guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
@@ -178,16 +178,16 @@ process basecalling_cpu {
     when:
 	params.basecalling & !params.gpu & params.demultiplexer == 'qcat'
 	script:
-    """
-    set +eu
+	"""
+	set +eu
 	if [[ "${params.guppy_config_cpu}" != "false" ]] ; then
-	    guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
-    elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
-    fi
-    cp .command.log guppy_basecaller.log
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+	fi
+	cp .command.log guppy_basecaller.log
 	guppy_basecaller --version > guppy_basecaller_version.txt
-    """
+	"""
 }
 
 process basecalling_cpu_single_isolate {
@@ -210,10 +210,10 @@ process basecalling_cpu_single_isolate {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_cpu}" != "false" ]] ; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
-    fi
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+	fi
 	cp .command.log guppy_basecaller.log
 	cat *.fastq > ${sample}.fastq
 	gzip ${sample}.fastq
@@ -247,38 +247,38 @@ process demultiplexing_qcat {
 		gzip none.fastq
 	fi
 	qcat --version > qcat_version.txt
-    """
+	"""
 }
 
 process basecalling_demultiplexing_guppy {
-    cpus "${params.guppy_num_callers}"
-    label "gpu"
-    label "guppy_gpu"
-    publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
-    input:
-        path(fast5_dir)
-    output:
-        path "sequencing_summary.txt", emit: sequencing_summary
-        path "*fastq.gz", emit: demultiplexed_fastq
-        path("*log")
+	cpus "${params.guppy_num_callers}"
+	label "gpu"
+	label "guppy_gpu"
+	publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
+	input:
+		path(fast5_dir)
+	output:
+		path "sequencing_summary.txt", emit: sequencing_summary
+		path "*fastq.gz", emit: demultiplexed_fastq
+		path("*log")
 		path("guppy_basecaller_version.txt")
-    when:
+	when:
 	params.basecalling & params.gpu & params.demultiplexer == 'guppy'
 	script:
-    """
-    set +eu
-    if [[ "${params.guppy_config_gpu}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config "${params.guppy_config_gpu}" --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
-    elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-	    guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}	
-    fi
-    cp .command.log guppy_basecaller.log
+	"""
+	set +eu
+	if [[ "${params.guppy_config_gpu}" != "false" ]]; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config "${params.guppy_config_gpu}" --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}	
+	fi
+	cp .command.log guppy_basecaller.log
 	for dir in barc*/ uncl*/; do
 		barcode_id=\${dir%*/}
 		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
 	done
 	guppy_basecaller --version > guppy_basecaller_version.txt
-    """
+	"""
 }
 
 process basecalling_demultiplexing_guppy_cpu {
@@ -287,56 +287,56 @@ process basecalling_demultiplexing_guppy_cpu {
     label "guppy_cpu"
     publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
     input:
-        path(fast5_dir)
-    output:
-        path "sequencing_summary.txt", emit: sequencing_summary
-        path "*fastq.gz", emit: demultiplexed_fastq
-        path("*log")
+		path(fast5_dir)
+	output:
+		path "sequencing_summary.txt", emit: sequencing_summary
+		path "*fastq.gz", emit: demultiplexed_fastq
+		path("*log")
 		path("guppy_basecaller_version.txt")
-    when:
+	when:
 	params.basecalling & !params.gpu & params.demultiplexer == 'guppy'
 	script:
-    """
-    set +eu
-    if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-    guppy_basecaller -i ${fast5_dir} -s \$PWD --config "${params.guppy_config_cpu}" --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
-    elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-        guppy_basecaller -i ${fast5_dir} -s \$PWD  --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
-    fi
-    cp .command.log guppy_basecaller.log
-    for dir in barc*/ uncl*/; do
-        barcode_id=\${dir%*/}
-        cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
-    done
+	"""
+	set +eu
+	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD --config "${params.guppy_config_cpu}" --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+		guppy_basecaller -i ${fast5_dir} -s \$PWD  --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+	fi
+	cp .command.log guppy_basecaller.log
+	for dir in barc*/ uncl*/; do
+		barcode_id=\${dir%*/}
+		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
+	done
 	guppy_basecaller --version > guppy_basecaller_version.txt
-    """
+	"""
 }
 
 process demultiplexing_guppy {
-    cpus "${params.guppy_barcoder_threads}"
-    label "gpu"
-    label "guppy_gpu"
-    publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
-    input:
-        path(fastq_dir)
-    output:
-        path "*fastq.gz", emit: demultiplexed_fastq
-        path("*log")
+	cpus "${params.guppy_barcoder_threads}"
+	label "gpu"
+	label "guppy_gpu"
+	publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
+	input:
+		path(fastq_dir)
+	output:
+		path "*fastq.gz", emit: demultiplexed_fastq
+		path("*log")
 		path "barcoding_summary.txt"
 		path("guppy_barcoder_version.txt")
-    when:
+	when:
 	params.demultiplexer == 'guppy' & params.demultiplexing & params.gpu
 	script:
-    """
-    set +eu
-    guppy_barcoder -i ${fastq_dir} -s \$PWD --device ${params.guppy_gpu_device} --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
-    cp .command.log guppy_barcoder.log
-    for dir in barc*/ uncl*/; do
-        barcode_id=\${dir%*/}
-        cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
-    done
+	"""
+	set +eu
+	guppy_barcoder -i ${fastq_dir} -s \$PWD --device ${params.guppy_gpu_device} --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
+	cp .command.log guppy_barcoder.log
+	for dir in barc*/ uncl*/; do
+		barcode_id=\${dir%*/}
+		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
+	done
 	guppy_barcoder --version > guppy_barcoder_version.txt
-    """
+	"""
 }
 
 process demultiplexing_guppy_cpu {
@@ -345,25 +345,25 @@ process demultiplexing_guppy_cpu {
     label "guppy_cpu"
     publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
     input:
-        path(fastq_dir)
+		path(fastq_dir)
     output:
-        path "*fastq.gz", emit: demultiplexed_fastq
-        path("*log")
+    	path "*fastq.gz", emit: demultiplexed_fastq
+		path("*log")
 		path "barcoding_summary.txt"
 		path("guppy_barcoder_version.txt")
-    when:
+	when:
 	params.demultiplexer == 'guppy' & params.demultiplexing & !params.gpu
 	script:
-    """
-    set +eu
-    guppy_barcoder -i ${fastq_dir} -s \$PWD --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
-    cp .command.log guppy_barcoder.log
-    for dir in barc*/ uncl*/; do
-        barcode_id=\${dir%*/}
-        cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
-    done
+	"""
+	set +eu
+	guppy_barcoder -i ${fastq_dir} -s \$PWD --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
+	cp .command.log guppy_barcoder.log
+	for dir in barc*/ uncl*/; do
+		barcode_id=\${dir%*/}
+		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
+	done
 	guppy_barcoder --version > guppy_barcoder_version.txt
-    """
+	"""
 }
 
 process pycoqc {
@@ -395,7 +395,7 @@ process rasusa {
 	input:
 		tuple val(barcode), file(long_reads), val(sample), val(genome_size)
 	output:
-        tuple val(barcode), file("subsampled.fastq.gz"), val(sample), val(genome_size), emit: subsampled_fastq
+		tuple val(barcode), file("subsampled.fastq.gz"), val(sample), val(genome_size), emit: subsampled_fastq
 		path("rasusa.log")
 		path("rasusa_version.txt")
 	when:
@@ -403,7 +403,7 @@ process rasusa {
 	script:
 	"""
 	set +eu
-    rasusa --coverage ${params.rasusa_coverage} --genome-size ${genome_size} --input ${long_reads} --output subsampled.fastq.gz
+	rasusa --coverage ${params.rasusa_coverage} --genome-size ${genome_size} --input ${long_reads} --output subsampled.fastq.gz
 	cp .command.log rasusa.log
 	rasusa --version > rasusa_version.txt
 	"""
@@ -411,7 +411,7 @@ process rasusa {
 
 process porechop {
 	cpus "${params.porechop_threads}"
-    tag "${sample}"
+	tag "${sample}"
 	label "cpu"
 	label "big_mem"
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*.log", saveAs: { filename -> "${sample}_$filename" }
@@ -419,7 +419,7 @@ process porechop {
 	input:
 		tuple val(barcode), file(long_reads), val(sample), val(genome_size)
 	output:
-        tuple val(barcode), file("trimmed.fastq.gz"), val(sample), val(genome_size), emit: trimmed_fastq
+		tuple val(barcode), file("trimmed.fastq.gz"), val(sample), val(genome_size), emit: trimmed_fastq
 		path("porechop.log")
 		path("porechop_version.txt")
 	when:
@@ -434,67 +434,67 @@ process porechop {
 }
 
 process japsa {
-    cpus 1
-    tag "${sample}"
-    label "cpu"
-    publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: '*filtered.fastq.gz', saveAs: { filename -> "${sample}_$filename" }
-    input:
-        tuple val(barcode), path(trimmed), val(sample), val(genome_size)
-    output:
-        tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
-    when:
+	cpus 1
+	tag "${sample}"
+	label "cpu"
+	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: '*filtered.fastq.gz', saveAs: { filename -> "${sample}_$filename" }
+	input:
+		tuple val(barcode), path(trimmed), val(sample), val(genome_size)
+	output:
+		tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
+	when:
 	!params.skip_filtering & params.filtering == 'japsa'
-    script:
-    """
-    set +eu
-    jsa.np.filter --input ${trimmed} ${params.japsa_args} --output filtered.fastq.gz
-    """
+	script:
+	"""
+	set +eu
+	jsa.np.filter --input ${trimmed} ${params.japsa_args} --output filtered.fastq.gz
+	"""
 }
 
 process filtlong {
-    cpus 1
-    tag "${sample}"
-    label "cpu"
-    publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: '*filtered.fastq.gz', saveAs: { filename -> "${sample}_$filename" }
-    publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: 'filtlong.log', saveAs: { filename -> "${sample}_$filename" }
+	cpus 1
+	tag "${sample}"
+	label "cpu"
+	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: '*filtered.fastq.gz', saveAs: { filename -> "${sample}_$filename" }
+	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: 'filtlong.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/1_filtering",  mode: 'copy', pattern: "*_version.txt"
 	input:
-        tuple val(barcode), path(trimmed), val(sample), val(genome_size)
-    output:
-        tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
-        path("*.log")
+		tuple val(barcode), path(trimmed), val(sample), val(genome_size)
+	output:
+		tuple val(barcode), path("filtered.fastq.gz"), val(sample), val(genome_size), emit: filtered_fastq
+		path("*.log")
 		path("filtlong_version.txt")
 	when:
 	!params.skip_filtering & params.filtering == 'filtlong'
-    script:
-    """
-    set +eu
+	script:
+	"""
+	set +eu
 	filtlong ${params.filtlong_args} ${trimmed} | gzip > filtered.fastq.gz
 	cp .command.log filtlong.log
 	filtlong --version > filtlong_version.txt
-    """
+	"""
 }
 
 process flye {
 	cpus "${params.flye_threads}"
-    tag "${sample}"
-    label "cpu"
+	tag "${sample}"
+	label "cpu"
 	label "big_mem"
-    publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: 'assembly*', saveAs: { filename -> "${sample}_$filename" }
- 	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: 'flye.log', saveAs: { filename -> "${sample}_$filename" }
+	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: 'assembly*', saveAs: { filename -> "${sample}_$filename" }
+	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: 'flye.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/2_assembly",  mode: 'copy', pattern: "*_version.txt"
-    input:
+	input:
 	tuple val(barcode), path(filtered), val(sample), val(genome_size)
-    output:
+	output:
 	tuple val(barcode), path(filtered), val(sample), path("assembly.fasta"), path("assembly_info.txt"), path("assembly_graph.gfa"), path("assembly_graph.gv"), emit: assembly_out
 	path("flye.log")
 	path("flye_version.txt")
-    script:
-    """
-    set +eu
-    flye --nano-raw ${filtered} --genome-size ${genome_size} --threads ${params.flye_threads} --out-dir \$PWD ${params.flye_args}
+	script:
+	"""
+	set +eu
+	flye --nano-raw ${filtered} --genome-size ${genome_size} --threads ${params.flye_threads} --out-dir \$PWD ${params.flye_args}
 	flye -v 2> flye_version.txt
-    """
+	"""
 }
 
 prefix="flye"
@@ -545,11 +545,11 @@ process medaka_cpu {
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: "*_version.txt"	
     input:
 	tuple val(barcode), path(filtered), val(sample), path(draft)
-    output:
+	output:
 	tuple val(barcode), path(filtered), val(sample), path ("consensus.fasta"), emit: polished_medaka
 	path("medaka.log")
 	path("medaka_version.txt")
-    when:
+	when:
 	params.polisher == 'medaka'
 	script:
 	"""
@@ -661,7 +661,7 @@ process fixstart_LR {
 process quast {
 	cpus "${params.quast_threads}"
 	tag "${sample}"
-    label "cpu"
+	label "cpu"
 	publishDir "$params.outdir/$sample/5_quast",  mode: 'copy', pattern: 'report*', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/5_quast",  mode: 'copy', pattern: 'quast.log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/5_quast",  mode: 'copy', pattern: "*_version.txt"
@@ -670,8 +670,8 @@ process quast {
 	output:
 		tuple path("report.txt"), path("report.html"), path("report.tsv"), path("report.pdf"), path("quast.log"), emit: quast_out
 		path("quast_version.txt")
-    script:
-    """
+	script:
+	"""
 	set +eu
 	quast.py -o \$PWD -t ${params.quast_threads} -l ${sample} ${polished} ${params.quast_args}
 	quast --version > quast_version.txt
