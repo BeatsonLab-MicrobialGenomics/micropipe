@@ -16,7 +16,7 @@ https://github.com/BeatsonLab-MicrobialGenomics/micropipe
 def helpMessage() {
 	log.info"""
 	=========================================
-	microPIPE v${v${workflow.manifest.version}
+	microPIPE v${workflow.manifest.version}
 	=========================================
 	Usage:
 	Basecalling, demultiplexing and assembly workflow:
