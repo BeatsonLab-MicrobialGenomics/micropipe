@@ -118,6 +118,14 @@ barcode01,S24,barcode01.fastq.gz,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fa
 barcode02,S34,barcode02.fastq.gz,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
 ```
 
+4. If Illumina reads are not available (--skip_illumina), do not include the two columns with the Illumina files:
+
+```
+barcode_id,sample_id,long_fastq,genome_size
+barcode01,S24,barcode01.fastq.gz,5.5m
+barcode02,S34,barcode02.fastq.gz,5.5m
+```
+
 **3. Run the pipeline**
 
 The pipeline can be used to run:
