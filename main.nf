@@ -107,6 +107,7 @@ process basecalling {
 	cpus "${params.guppy_num_callers}"
 	label "gpu"
 	label "guppy_gpu"
+	containerOptions '--nv'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.txt'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.log'
 	input:
@@ -135,6 +136,7 @@ process basecalling_single_isolate {
 	cpus "${params.guppy_num_callers}"
 	label "gpu"
 	label "guppy_gpu"
+	containerOptions '--nv'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.txt'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*.log'
 	publishDir "$params.outdir/0_basecalling",  mode: 'copy', pattern: '*fastq.gz'
@@ -254,6 +256,7 @@ process basecalling_demultiplexing_guppy {
 	cpus "${params.guppy_num_callers}"
 	label "gpu"
 	label "guppy_gpu"
+	containerOptions '--nv'
 	publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
 	input:
 		path(fast5_dir)
@@ -316,6 +319,7 @@ process demultiplexing_guppy {
 	cpus "${params.guppy_barcoder_threads}"
 	label "gpu"
 	label "guppy_gpu"
+	containerOptions '--nv'
 	publishDir "$params.outdir/0_demultiplexing", mode: 'copy'
 	input:
 		path(fastq_dir)
