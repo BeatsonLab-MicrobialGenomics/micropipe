@@ -124,7 +124,7 @@ process basecalling {
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
 		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
-	elif if [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
+	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
 		guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
