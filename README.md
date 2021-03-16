@@ -242,26 +242,26 @@ Basecalling
 *	`--kit`: Name of the ONT kit used for sequencing (default=false). Ignored if '--guppy_config_gpu' or '--guppy_congif_cpu' is specified
 
 Quality control:
-* `--skip_pycoqc`: skip the pycoQC step to generate a quality control html report (when --basecalling)
+* `--skip_pycoqc`: skip the pycoQC step to generate a quality control html report, when --basecalling (default=false)
 
 Demultiplexing:
-* `--demultiplexer`: demultiplexing tool: "qcat" or "guppy" (default="qcat")
+* `--demultiplexer`: demultiplexing tool: "qcat" or "guppy" (default=`--demultiplexer "qcat"`)
 * `--qcat_args`: qcat optional parameters (default="")
 * `--guppy_barcoder_args`: Guppy barcoder parameters (default="--recursive --trim_barcodes -q 0")
 * `--guppy_barcode_kits`: Space separated list of barcoding kit(s) to detect against (default="SQK-RBK004")
 * `--guppy_barcoder_threads`: number of worker threads to spawn for Guppy barcoder to use. Increasing this number will allow Guppy barcoder to make better use of multi-core CPU systems, but may impact overall system performance (default=2)
 
 Adapter trimming:
-* `--skip_porechop` : skip the Porechop trimming step 
+* `--skip_porechop`: skip the Porechop trimming step (default=false)
 * `--porechop_threads`: number of threads for Porechop (default=4)
 * `--porechop_args`: Porechop optional parameters (default=""), see [details](https://github.com/rrwick/Porechop#full-usage)
 
 Filtering:
-* `--skip_filtering` : skip the filtering step 
-* `--filtering`: filtering tool: "japsa" or "filtlong" (default="japsa")
+* `--skip_filtering`: skip the filtering step (default=false)
+* `--filtering`: filtering tool: "japsa" or "filtlong" (default=`--filtering "japsa"`)
 * `--japsa_args`: Japsa optional parameters (default="--lenMin 1000 --qualMin 10"), see [details](https://japsa.readthedocs.io/en/latest/tools/jsa.np.filter.html)
 * `--filtlong_args`: Filtlong optional parameters (default="--min_length 1000 --keep_percent 90"), see [details](https://github.com/rrwick/Filtlong#full-usage)
-* `--skip_rasusa`: Skip the sub-sampling Rasusa step
+* `--skip_rasusa`: Skip the sub-sampling Rasusa step (default=false)
 * `--rasusa_coverage`: The desired coverage to sub-sample the reads to (default=100), see [details](https://github.com/mbhall88/rasusa#-c---coverage)
 
 Assembly:
@@ -274,13 +274,13 @@ Polishing:
 * `--racon_args`: Racon optional parameters (default="-m 8 -x -6 -g -8 -w 500")
 * `--racon_threads`: number of threads for Racon (default=4)
 * `--medaka_threads`: number of threads for Medaka (default=4)
-* `--skip_illumina`: skip the short-read polishing step if Illumina reads are not available (not recommended)
+* `--skip_illumina`: skip the short-read polishing step if Illumina reads are not available (not recommended, default=false)
 * `--nextpolish_threads`: number of threads for Nextpolish (default=4)
-* `--skip_fixstart`: skip the Circlator fixstart step, see [details](https://github.com/sanger-pathogens/circlator/wiki/Task:-fixstart)
-* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example "--genes_fa /path/to/fasta".
+* `--skip_fixstart`: skip the Circlator fixstart step (default=false), see [details](https://github.com/sanger-pathogens/circlator/wiki/Task:-fixstart)
+* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/fasta"`.
 
 Assembly evaluation:
-* `--skip_quast`: skip the QUAST assembly assessment step
+* `--skip_quast`: skip the QUAST assembly assessment step (default=false)
 * `--quast_args`: QUAST optional parameters (default=""), see [details](http://quast.sourceforge.net/docs/manual.html#sec2.3)
 * `--quast_threads`: number of threads for QUAST (default=1)
 
