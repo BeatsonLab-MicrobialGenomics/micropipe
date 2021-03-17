@@ -233,7 +233,7 @@ To test the assembly-only pipeline, edit the `sample_1.csv` samplesheet to point
 Some parameters can be added to the command line in order to include or skip some steps and modify some parameters:
 
 Basecalling 
-* `--gpu`: use the GPU node to run the Guppy basecalling and/or demultiplexing step (default=false) 
+* `--gpu`: use the GPU node to run the Guppy basecalling and/or demultiplexing step (default=true) 
 * `--guppy_basecaller_args`: Guppy basecaller parameters (default="--recursive --trim_barcodes -q 0")
 * `--guppy_num_callers`: number of parallel basecallers to create when running guppy basecalling (default=8)
 * `--guppy_cpu_threads_per_caller`: number of CPU worker threads per basecaller (default=1). The number of CPU threads (num_callers * cpu_threads_per_caller ) used should generally not exceed the number of logical CPU cores your machine has.
@@ -277,7 +277,7 @@ Polishing:
 * `--skip_illumina`: skip the short-read polishing step if Illumina reads are not available (not recommended, default=false)
 * `--nextpolish_threads`: number of threads for Nextpolish (default=4)
 * `--skip_fixstart`: skip the Circlator fixstart step (default=false), see [details](https://github.com/sanger-pathogens/circlator/wiki/Task:-fixstart)
-* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/fasta"`.
+* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/fasta"` (the file should be located in the nextflow launch directory).
 
 Assembly evaluation:
 * `--skip_quast`: skip the QUAST assembly assessment step (default=false)
