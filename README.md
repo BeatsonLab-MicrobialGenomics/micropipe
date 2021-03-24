@@ -34,15 +34,15 @@ Please note that this pipeline does not perform extensive quality assessment of 
 
 1. Basecalling, demultiplexing and assembly workflow
 
-`nextflow main.nf --basecalling --demultiplexing --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --outdir /path/to/outdir/`
+`nextflow main.nf --basecalling --demultiplexing --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 
 2. Demultiplexing and assembly workflow (basecalling already complete)
 
-`nextflow main.nf --demultiplexing --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --outdir /path/to/outdir/`
+`nextflow main.nf --demultiplexing --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 
 3. Assembly only workflow (basecalling and demultiplexing already complete)
 
-`nextflow main.nf --samplesheet /path/to/samples.csv --outdir /path/to/outdir/`
+`nextflow main.nf --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 
 
 # Installation
@@ -79,7 +79,6 @@ The pipeline uses separated Singularity containers for all processes. Nextflow w
 ```
 singularity {
   enabled = true
-  autoMounts = true
   singularity.cacheDir = '/path/to/cachedir'
 }
 ```
@@ -134,13 +133,14 @@ The pipeline can be used to run:
 
 The entire workflow from basecalling to polishing will be run. The input files will be the ONT fast5 files and the Illumina fastq files. 
 
-`nextflow main.nf --basecalling --demultiplexing --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --outdir /path/to/outdir/`
+`nextflow main.nf --basecalling --demultiplexing --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 ```
 --samplesheet: samplesheet file
---outdir: name of the output directory to be created
 --basecalling: flag to run the basecalling step 
 --demultiplexing: flag to run the demultiplexing step 
 --fast5: directory containing the ONT fast5 files
+--outdir: path to the output directory to be created
+--datadir: path to the directory containing the Illumina fastq files
 --guppy_config_gpu: Guppy configuration file name for basecalling using GPU resources (default=dna_r9.4.1_450bps_hac.cfg suitable if the Flow Cell Type = FLO-MIN106 and Kit = SQK-RBK004)
 --guppy_config_cpu: Guppy configuration file name for basecalling using CPU resources (default=dna_r9.4.1_450bps_fast.cfg)
 --medaka_model: Medaka model (default=r941_min_high, Available models: r941_min_fast, r941_min_high, r941_prom_fast, r941_prom_high, r10_min_high, r941_min_diploid_snp), see [details](https://github.com/nanoporetech/medaka#models)
@@ -156,12 +156,13 @@ barcode02,S34,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
 
 The entire workflow from basecalling to polishing will be run (excluding demultiplexing). The input files will be the ONT fast5 files and the Illumina fastq files. 
 
-`nextflow main.nf --basecalling --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --outdir /path/to/outdir/`
+`nextflow main.nf --basecalling --samplesheet /path/to/samples.csv --fast5 /path/to/fast5/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 ```
 --samplesheet: path to the samplesheet file
 --basecalling: flag to run the basecalling step
 --fast5: path to the directory containing the ONT fast5 files
 --outdir: path to the output directory to be created
+--datadir: path to the directory containing the Illumina fastq files
 --guppy_config_gpu: Guppy configuration file name for basecalling using GPU resources (default=dna_r9.4.1_450bps_hac.cfg suitable if the Flow Cell Type = FLO-MIN106 and Kit = SQK-LSK109)
 --guppy_config_cpu: Guppy configuration file name for basecalling using CPU resources (default=dna_r9.4.1_450bps_fast.cfg)
 --medaka_model: name of the Medaka model (default=r941_min_high, Available models: r941_min_fast, r941_min_high, r941_prom_fast, r941_prom_high, r10_min_high, r941_min_diploid_snp), see [details](https://github.com/nanoporetech/medaka#models)
@@ -176,12 +177,13 @@ S24,S24EC.filtered_1P.fastq.gz,S24EC.filtered_2P.fastq.gz,5.5m
 
 The entire workflow from demultiplexing to polishing will be run. The input files will be the ONT fastq files and the Illumina fastq files. 
 
-`nextflow main.nf --demultiplexing --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --outdir /path/to/outdir/`
+`nextflow main.nf --demultiplexing --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 ```
 --samplesheet: path to the samplesheet file
 --demultiplexing: flag to run the demultiplexing step
 --fastq: path to the directory containing the ONT fastq files (gzip compressed)
 --outdir: path to the output directory to be created
+--datadir: path to the directory containing the Illumina fastq files
 --guppy_config_gpu: Guppy configuration file name for basecalling using GPU resources (default=dna_r9.4.1_450bps_hac.cfg suitable if the Flow Cell Type = FLO-MIN106 and Kit = SQK-LSK109)
 --guppy_config_cpu: Guppy configuration file name for basecalling using CPU resources (default=dna_r9.4.1_450bps_fast.cfg)
 --medaka_model: name of the Medaka model (default=r941_min_high, available models: r941_min_fast, r941_min_high, r941_prom_fast, r941_prom_high, r10_min_high, r941_min_diploid_snp), see [details](https://github.com/nanoporetech/medaka#models)
@@ -197,10 +199,12 @@ barcode02,S34,S34EC.filtered_1P.fastq.gz,S34EC.filtered_2P.fastq.gz,5.5m
 
 The assembly workflow from adapter trimming to polishing will be run. The input files will be the ONT fastq files and the Illumina fastq files. 
 
-`nextflow main.nf --samplesheet /path/to/samples.csv --outdir /path/to/outdir/`
+`nextflow main.nf --samplesheet /path/to/samples.csv --fastq /path/to/fastq/directory/ --datadir /path/to/datadir/ --outdir /path/to/outdir/`
 ```
 --samplesheet: path to the samplesheet file
+--fastq: path to the directory containing the ONT fastq files (gzip compressed)
 --outdir: path to the output directory to be created
+--datadir: path to the directory containing the Illumina fastq files
 --medaka_model: name of the Medaka model (default=r941_min_high, Available models: r941_min_fast, r941_min_high, r941_prom_fast, r941_prom_high, r10_min_high, r941_min_diploid_snp), see [details](https://github.com/nanoporetech/medaka#models)
 ```
 Example of samplesheet file: 
@@ -246,7 +250,7 @@ Quality control:
 
 Demultiplexing:
 * `--demultiplexer`: demultiplexing tool: "qcat" or "guppy" (default=`--demultiplexer "qcat"`)
-* `--qcat_args`: qcat optional parameters (default="")
+* `--qcat_args`: qcat optional parameters (default=""), see [details](https://github.com/nanoporetech/qcat#full-usage)
 * `--guppy_barcoder_args`: Guppy barcoder parameters (default="--recursive --trim_barcodes -q 0")
 * `--guppy_barcode_kits`: Space separated list of barcoding kit(s) to detect against (default="SQK-RBK004")
 * `--guppy_barcoder_threads`: number of worker threads to spawn for Guppy barcoder to use. Increasing this number will allow Guppy barcoder to make better use of multi-core CPU systems, but may impact overall system performance (default=2)
@@ -261,27 +265,27 @@ Filtering:
 * `--filtering`: filtering tool: "japsa" or "filtlong" (default=`--filtering "japsa"`)
 * `--japsa_args`: Japsa optional parameters (default="--lenMin 1000 --qualMin 10"), see [details](https://japsa.readthedocs.io/en/latest/tools/jsa.np.filter.html)
 * `--filtlong_args`: Filtlong optional parameters (default="--min_length 1000 --keep_percent 90"), see [details](https://github.com/rrwick/Filtlong#full-usage)
-* `--skip_rasusa`: Skip the sub-sampling Rasusa step (default=false)
+* `--skip_rasusa`: Skip the sub-sampling Rasusa step (default=true)
 * `--rasusa_coverage`: The desired coverage to sub-sample the reads to (default=100), see [details](https://github.com/mbhall88/rasusa#-c---coverage)
 
 Assembly:
-* `--flye_args`: Flye optional parameters (default="--plasmids")
+* `--flye_args`: Flye optional parameters (default=`--flye_args "--plasmids"`), see [details](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md)
 * `--flye_threads`: number of threads for Flye (default=4)
 
 Polishing:
 * `--polisher`: Long-read polishing tool: "medaka" (racon followed by medaka) or "nextpolish" (default="medaka")
 * `--racon_nb`: number of Racon long-read polishing iterations (default=4)
-* `--racon_args`: Racon optional parameters (default="-m 8 -x -6 -g -8 -w 500")
+* `--racon_args`: Racon optional parameters (default="-m 8 -x -6 -g -8 -w 500"), see [details](https://github.com/isovic/racon#usage)
 * `--racon_threads`: number of threads for Racon (default=4)
 * `--medaka_threads`: number of threads for Medaka (default=4)
 * `--skip_illumina`: skip the short-read polishing step if Illumina reads are not available (not recommended, default=false)
 * `--nextpolish_threads`: number of threads for Nextpolish (default=4)
 * `--skip_fixstart`: skip the Circlator fixstart step (default=false), see [details](https://github.com/sanger-pathogens/circlator/wiki/Task:-fixstart)
-* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/fasta"` (the file should be located in the nextflow launch directory).
+* `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/datadir/fasta"` (the file should be located in the nextflow launch directory or in the datadir).
 
 Assembly evaluation:
 * `--skip_quast`: skip the QUAST assembly assessment step (default=false)
-* `--quast_args`: QUAST optional parameters (default=""), see [details](http://quast.sourceforge.net/docs/manual.html#sec2.3)
+* `--quast_args`: QUAST optional parameters (default=""), see [details](http://quast.sourceforge.net/docs/manual.html#sec2.3). Example: `--quast_args "-r /path/to/datadir/fasta"` (the file should be located in the nextflow launch directory or in the datadir).
 * `--quast_threads`: number of threads for QUAST (default=1)
 
 # Structure of the output folders
@@ -293,15 +297,17 @@ The main output folder (`--outdir`) will contain the following folders:
 * **a folder per sample:** see content below (the folder is named as in the column sample_id in the samplesheet file)
 
 Each sample folder will contain the following folders:
-* **1_filtering:** Fastq files containing trimmed reads (sample_id_trimmed.fastq.gz) and filtered reads (sample_id_filtered.fastq.gz) 
+* **1_filtering:** Fastq files containing filtered reads (sample_id_filtered.fastq.gz) 
 * **2_assembly:** Flye assembly output files (.fasta, .gfa, .gv, .info.txt), see [details](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-flye-output)
 * **3_polishing_long_reads:** Long-read polished assembly fasta file (sample_id_flye_polishedLR.fasta)
-* **4_polishing_short_reads:** Final polished assembly fasta file (sample_id_flye_polishedLR_SR.fasta)
+* **4_polishing_short_reads:** Final polished assembly fasta file (sample_id_flye_polishedLR_SR_fixstart.fasta)
 * **5_quast:** QUAST quality assessment report, see [details](http://quast.sourceforge.net/docs/manual.html)
 
 # Comments
 
 The pipeline has been tested using the following grid based executors: SLURM, PBS Pro and LSF.  
+
+Do not forget to delete the /work directory created by Nextflow once the pipeline has completed.
 
 Planned upgrades:
 - Enabling GPU resource for Racon and Medaka processes.
