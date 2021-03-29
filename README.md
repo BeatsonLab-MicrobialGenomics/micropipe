@@ -28,7 +28,7 @@ Please note that this pipeline does not perform extensive quality assessment of 
 * [Optional parameters](#optional-parameters)
 * [Structure of the output folders](#structure-of-the-output-folders)
 * [Comments](#comments)
-
+* [Citation](#citation)
 
 # Quickstart
 
@@ -312,3 +312,10 @@ Do not forget to delete the /work directory created by Nextflow once the pipelin
 Planned upgrades:
 - Enabling GPU resource for Racon and Medaka processes.
 
+# Citation
+
+If you use microPIPE in your work, please cite:
+
+MicroPIPE: An end-to-end solution for high-quality complete bacterial genome construction  
+Valentine Murigneux, Leah W. Roberts, Brian M. Forde, Minh-Duy Phan, Nguyen Thi Khanh Nhu, Adam D. Irwin, Patrick N. A. Harris, David L. Paterson, Mark A. Schembri, David M. Whiley, Scott A. Beatson  
+bioRxiv 2021.02.02.429319; doi: https://doi.org/10.1101/2021.02.02.429319 
