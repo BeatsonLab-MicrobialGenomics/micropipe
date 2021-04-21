@@ -249,7 +249,7 @@ Quality control:
 * `--skip_pycoqc`: skip the pycoQC step to generate a quality control html report, when --basecalling (default=false)
 
 Demultiplexing:
-* `--demultiplexer`: demultiplexing tool: "qcat" or "guppy" (default=`--demultiplexer "qcat"`)
+* `--demultiplexer`: demultiplexing tool: "qcat" or "guppy" (default=`--demultiplexer "guppy"`)
 * `--qcat_args`: qcat optional parameters (default=""), see [details](https://github.com/nanoporetech/qcat#full-usage)
 * `--guppy_barcoder_args`: Guppy barcoder parameters (default="--recursive --trim_barcodes -q 0")
 * `--guppy_barcode_kits`: Space separated list of barcoding kit(s) to detect against (default="SQK-RBK004")
@@ -279,7 +279,9 @@ Polishing:
 * `--racon_threads`: number of threads for Racon (default=4)
 * `--medaka_threads`: number of threads for Medaka (default=4)
 * `--skip_illumina`: skip the short-read polishing step if Illumina reads are not available (not recommended, default=false)
-* `--nextpolish_threads`: number of threads for Nextpolish (default=4)
+* `--nextpolish_threads`: number of threads for nextPolish (default=4)
+* `--nextpolish_task_SR`: task to run for nextPolish short-read polishing ("12" or "1212", default="1212"), see [details](https://nextpolish.readthedocs.io/en/latest/OPTION.html#cmdoption-arg-task)
+* `--nextpolish_task_LR`: task to run for nextPolish long-read polishing ("5" or "55",  default="55"), see [details](https://nextpolish.readthedocs.io/en/latest/OPTION.html#cmdoption-arg-task)
 * `--skip_fixstart`: skip the Circlator fixstart step (default=false), see [details](https://github.com/sanger-pathogens/circlator/wiki/Task:-fixstart)
 * `--fixstart_args`: Circlator fixstart optional parameters (default=""). Example `--fixstart_args "--genes_fa /path/to/datadir/fasta"` (the file should be located in the nextflow launch directory or in the datadir).
 

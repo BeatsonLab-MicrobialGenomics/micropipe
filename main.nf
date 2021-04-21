@@ -511,6 +511,7 @@ process racon_cpu {
 	cpus "${params.racon_threads}"
 	tag "${sample}"
 	label "cpu"
+	label "racon"
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*fasta', saveAs: { filename -> "${sample}_${prefix}_${raconv}_${params.racon_nb}.fasta"}
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: '*log', saveAs: { filename -> "${sample}_$filename" }
 	publishDir "$params.outdir/$sample/3_polishing_long_reads",  mode: 'copy', pattern: "*_version.txt"
@@ -585,11 +586,16 @@ process nextpolish_LR {
 	"""
 	set +eu
 	ls ${filtered} > lgs.fofn
-	echo -e "task = 55\ngenome = ${assembly}\nmultithread_jobs = ${task.cpus}\nlgs_fofn = lgs.fofn\nlgs_minimap2_options = -x map-ont -t ${params.nextpolish_threads}" > nextpolish.cfg
+	echo -e "task = ${params.nextpolish_task_LR}\ngenome = ${assembly}\nmultithread_jobs = ${task.cpus}\nlgs_fofn = lgs.fofn\nlgs_minimap2_options = -x map-ont -t ${params.nextpolish_threads}" > nextpolish.cfg
 	nextPolish nextpolish.cfg
-	cat 01.lgs_polish/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr}.fasta
+	if [[ "${params.nextpolish_task_LR}" == "55" ]] || [[ "${params.nextpolish_task_LR}" == "best" ]] ; then
+		cat 01.lgs_polish/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr}.fasta
+		rm -r 00.lgs_polish 01.lgs_polish
+	elif [[ "${params.nextpolish_task_LR}" == "5" ]]; then
+		cat 00.lgs_polish/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr}.fasta
+		rm -r 00.lgs_polish
+	fi
 	rm input.lgspart.*.gz
-	rm -r 00.lgs_polish 01.lgs_polish
 	cp .command.log nextpolish_LR.log
 	nextPolish --version 2> nextpolish_version.txt
 	"""
@@ -615,12 +621,17 @@ process nextpolish {
 	"""
 	set +eu
 	ls ${reads_1} ${reads_2} > sgs.fofn
-	echo -e "task = 1212\ngenome = ${draft}\nsgs_fofn = sgs.fofn\nmultithread_jobs = ${params.nextpolish_threads}" > nextpolish.cfg
+	echo -e "task = ${params.nextpolish_task_SR}\ngenome = ${draft}\nsgs_fofn = sgs.fofn\nmultithread_jobs = ${params.nextpolish_threads}" > nextpolish.cfg
 	nextPolish nextpolish.cfg
-	cat 01.kmer_count/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr_sr}_1.fasta
-	cat 03.kmer_count/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr_sr}_2.fasta
+	if [[ "${params.nextpolish_task_SR}" == "1212" ]] || [[ "${params.nextpolish_task_SR}" == "best" ]] ; then
+		cat 01.kmer_count/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr_sr}_1.fasta
+		cat 03.kmer_count/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr_sr}_2.fasta
+		rm -r 00.score_chain 01.kmer_count 02.score_chain 03.kmer_count
+	elif [[ "${params.nextpolish_task_SR}" == "12" ]]; then	
+		cat 01.kmer_count/*polish.ref.sh.work/polish_genome*/genome.nextpolish.part*.fasta > ${sample}_${prefix_lr_sr}_2.fasta
+		rm -r 00.score_chain 01.kmer_count
+	fi
 	rm input.sgspart*.fastq.gz
-	rm -r 00.score_chain 01.kmer_count 02.score_chain 03.kmer_count
 	cp .command.log nextpolish.log
 	nextPolish --version 2> nextpolish_version.txt
 	"""
