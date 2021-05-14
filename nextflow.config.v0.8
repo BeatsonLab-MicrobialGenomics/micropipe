@@ -22,9 +22,12 @@ params {
         fastq = false
 	datadir = false
 	demultiplexer = 'guppy'
-	//Path to the Guppy GPU and CPU binary folder. Change this as appropriate
-	guppy_gpu_folder= "/scratch/ont-guppy/bin"
-	guppy_cpu_folder = "/scratch/ont-guppy-cpu/bin"
+	//Path to the Guppy GPU and CPU binary folder (v3.4.3). Change this as appropriate when providing Guppy as a binary folder and do not forget the "/" at the end of the path
+	guppy_gpu_folder = "/scratch/ont-guppy/bin/"
+	guppy_cpu_folder = "/scratch/ont-guppy-cpu/bin/"
+	//Uncomment the two following lines when providing Guppy container images (and comment the two previous lines)
+	//guppy_gpu_folder = ""
+	//guppy_cpu_folder = ""
 	guppy_config_gpu = "dna_r9.4.1_450bps_hac.cfg"
         guppy_config_cpu = "dna_r9.4.1_450bps_fast.cfg"
         kit = false
@@ -89,8 +92,8 @@ dag {
 // Not generally user-modifiable !!!
 process {
 	withLabel: big_mem { memory = 32.GB }
-	//Path to the Guppy GPU and CPU container images. Change this if required
-	//withLabel: guppy_gpu { container = ''}
+	//Path to the Guppy GPU and CPU container images (v3.4.3). Uncomment and change this as appropriate if providing Guppy as a container image. 
+	//withLabel: guppy_gpu { container = '' }
 	//withLabel: guppy_cpu { container = '' }
 	withLabel: pycoqc { container = 'docker://quay.io/biocontainers/pycoqc:2.5.0.23--py_0' }
 	withName: demultiplexing_qcat { container = 'docker://quay.io/biocontainers/qcat:1.0.1--py_0' }
@@ -119,7 +122,7 @@ mounts {
     }
     if (params.datadir != false){
         datadir = "-B \"`[[ \"${params.datadir}\" =~ ^/ ]] && echo ${params.datadir} || echo ${PWD}/${params.datadir}`\""
-    }	
+    }   
 }
 
 singularity {

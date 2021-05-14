@@ -86,19 +86,38 @@ singularity {
 }
 ```
 
-The **nextflow.config** file should be modified to specify the location of Guppy using one of the following possibilities:
+The **nextflow.config** file should be modified to specify the location of Guppy using one of the following options:
 
-* Download and unpack the Guppy .tar.gz archive file. Provide the path to the Guppy binary folder in the params section: 
+* Download and unpack the Guppy .tar.gz archive file. Provide the path to the Guppy binary folder in the params section and comment the following lines in the process section: 
    ```
-   //Path to the Guppy GPU and CPU binary folder. Change this as appropriate
-   guppy_gpu_folder= "/scratch/ont-guppy/bin"
-   guppy_cpu_folder = "/scratch/ont-guppy-cpu/bin"  
+   params {
+   //Path to the Guppy GPU and CPU binary folder. Change this as appropriate when providing Guppy as a binary folder and do not forget the "/" at the end of the path
+   guppy_gpu_folder= "/scratch/ont-guppy/bin/"
+   guppy_cpu_folder = "/scratch/ont-guppy-cpu/bin/"
+   }
    ```
-* Provide the link to a Guppy container in the process section:
    ```
-   //Path to the Guppy GPU and CPU container images. Change this if required
-   //withLabel: guppy_gpu { container = ''}
+   process {
+   //Path to the Guppy GPU and CPU container images. Uncomment and change this as appropriate if providing Guppy as a container image.
+   //withLabel: guppy_gpu { container = '' }
    //withLabel: guppy_cpu { container = '' }
+   }
+   ```
+ 
+* Provide the link to a Guppy container in the process section and uncomment the two following lines in the params section:
+   ```  
+   params {
+   //Uncomment the two following lines when providing Guppy container images (and comment the two previous lines)
+   guppy_gpu_folder = ""
+   guppy_cpu_folder = ""
+   }
+   ```
+   ```
+   process { 
+   //Path to the Guppy GPU and CPU container images. Uncomment and change this as appropriate if providing Guppy as a container image. 
+   withLabel: guppy_gpu { container = '' }
+   withLabel: guppy_cpu { container = '' }
+   }
    ```
 
 An example configuration file can be found in this [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 

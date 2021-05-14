@@ -126,12 +126,12 @@ process basecalling {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
-	${params.guppy_gpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_gpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -156,14 +156,14 @@ process basecalling_single_isolate {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config ${params.guppy_config_gpu} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
 	cat *.fastq > ${sample}.fastq
 	gzip ${sample}.fastq
-	${params.guppy_gpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_gpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -186,12 +186,12 @@ process basecalling_cpu {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_cpu}" != "false" ]] ; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
-	${params.guppy_cpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_cpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -215,14 +215,14 @@ process basecalling_cpu_single_isolate {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_cpu}" != "false" ]] ; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --config ${params.guppy_config_cpu} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --flowcell ${params.flowcell} --kit ${params.kit} --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args}
 	fi
 	cp .command.log guppy_basecaller.log
 	cat *.fastq > ${sample}.fastq
 	gzip ${sample}.fastq
-	${params.guppy_cpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_cpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -274,16 +274,16 @@ process basecalling_demultiplexing_guppy {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]]; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config "${params.guppy_config_gpu}" --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --config "${params.guppy_config_gpu}" --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_gpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}	
+		${params.guppy_gpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --device ${params.guppy_gpu_device} --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}	
 	fi
 	cp .command.log guppy_basecaller.log
 	for dir in barc*/ uncl*/; do
 		barcode_id=\${dir%*/}
 		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
 	done
-	${params.guppy_gpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_gpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -305,16 +305,16 @@ process basecalling_demultiplexing_guppy_cpu {
 	"""
 	set +eu
 	if [[ "${params.guppy_config_gpu}" != "false" ]] ; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD --config "${params.guppy_config_cpu}" --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD --config "${params.guppy_config_cpu}" --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
 	elif [[ "${params.flowcell}" != "false" ]] && [[ "${params.kit}" != "false" ]]; then
-		${params.guppy_cpu_folder}/guppy_basecaller -i ${fast5_dir} -s \$PWD  --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
+		${params.guppy_cpu_folder}guppy_basecaller -i ${fast5_dir} -s \$PWD  --flowcell ${params.flowcell} --kit ${params.kit} --compress_fastq --num_callers ${params.guppy_num_callers} --cpu_threads_per_caller ${params.guppy_cpu_threads_per_caller} ${params.guppy_basecaller_args} --barcode_kits ${params.guppy_barcode_kits}
 	fi
 	cp .command.log guppy_basecaller.log
 	for dir in barc*/ uncl*/; do
 		barcode_id=\${dir%*/}
 		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
 	done
-	${params.guppy_cpu_folder}/guppy_basecaller --version > guppy_basecaller_version.txt
+	${params.guppy_cpu_folder}guppy_basecaller --version > guppy_basecaller_version.txt
 	"""
 }
 
@@ -336,13 +336,13 @@ process demultiplexing_guppy {
 	script:
 	"""
 	set +eu
-	${params.guppy_gpu_folder}/guppy_barcoder -i ${fastq_dir} -s \$PWD --device ${params.guppy_gpu_device} --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
+	${params.guppy_gpu_folder}guppy_barcoder -i ${fastq_dir} -s \$PWD --device ${params.guppy_gpu_device} --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
 	cp .command.log guppy_barcoder.log
 	for dir in barc*/ uncl*/; do
 		barcode_id=\${dir%*/}
 		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
 	done
-	${params.guppy_gpu_folder}/guppy_barcoder --version > guppy_barcoder_version.txt
+	${params.guppy_gpu_folder}guppy_barcoder --version > guppy_barcoder_version.txt
 	"""
 }
 
@@ -363,13 +363,13 @@ process demultiplexing_guppy_cpu {
 	script:
 	"""
 	set +eu
-	${params.guppy_cpu_folder}/guppy_barcoder -i ${fastq_dir} -s \$PWD --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
+	${params.guppy_cpu_folder}guppy_barcoder -i ${fastq_dir} -s \$PWD --compress_fastq ${params.guppy_barcoder_args} --barcode_kits ${params.guppy_barcode_kits} --worker_threads ${params.guppy_barcoder_threads}
 	cp .command.log guppy_barcoder.log
 	for dir in barc*/ uncl*/; do
 		barcode_id=\${dir%*/}
 		cat \${dir}/*.fastq.gz > \${barcode_id}.fastq.gz
 	done
-	${params.guppy_cpu_folder}/guppy_barcoder --version > guppy_barcoder_version.txt
+	${params.guppy_cpu_folder}guppy_barcoder --version > guppy_barcoder_version.txt
 	"""
 }
 
