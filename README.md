@@ -63,6 +63,9 @@ It will create the nextflow main executable file in the current directory. Optio
 
 * [Singularity](https://singularity.lbl.gov/install-linux) >= 2.3 (microPIPE has been tested with version 3.4.1, 3.5.0 and 3.6.3)
 
+* Guppy
+ 
+Due to the Oxford Nanopore Technologies terms and conditions, we are not allowed to redistribute the Guppy software either in its binary form or packaged form e.g. Docker or Singularity images. Therefore users will have to either install Guppy, provide a container image or start the pipeline from the basecalled fastq files.  See [Usage](#usage) section below for instructions. 
 
 **1. Installing microPIPE**
 
@@ -82,6 +85,21 @@ singularity {
   singularity.cacheDir = '/path/to/cachedir'
 }
 ```
+
+The **nextflow.config** file should be modified to specify the location of Guppy using one of the following possibilities:
+
+* Download and unpack the Guppy .tar.gz archive file. Provide the path to the Guppy binary folder in the params section: 
+   ```
+   //Path to the Guppy GPU and CPU binary folder. Change this as appropriate
+   guppy_gpu_folder= "/scratch/ont-guppy/bin"
+   guppy_cpu_folder = "/scratch/ont-guppy-cpu/bin"  
+   ```
+* Provide the link to a Guppy container in the process section:
+   ```
+   //Path to the Guppy GPU and CPU container images. Change this if required
+   //withLabel: guppy_gpu { container = ''}
+   //withLabel: guppy_cpu { container = '' }
+   ```
 
 An example configuration file can be found in this [repository](https://github.com/BeatsonLab-MicrobialGenomics/micropipe/blob/main/nextflow.config). 
 
