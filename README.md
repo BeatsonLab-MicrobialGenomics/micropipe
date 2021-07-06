@@ -67,6 +67,12 @@ It will create the nextflow main executable file in the current directory. Optio
  
 Due to the Oxford Nanopore Technologies terms and conditions, we are not allowed to redistribute the Guppy software either in its binary form or packaged form e.g. Docker or Singularity images. Therefore users will have to either install Guppy, provide a container image or start the pipeline from the basecalled fastq files.  See [Usage](#usage) section below for instructions. 
 
+In versions greater than Guppy v4.5.2, the default Guppy parameters have changed. If you wish to use Guppy > v4.5.2, please modify the `nexflow.config` to run Guppy with the "--disable_qscore_filtering" flag: 
+``` 
+params {
+        guppy_basecaller_args = "--recursive --trim_barcodes -q 0 --disable_qscore_filtering"
+}
+```
 **1. Installing microPIPE**
 
 microPIPE only requires the `main.nf` and `nexflow.config` files to run. You will also need to provide a samplesheet (explained below). 
