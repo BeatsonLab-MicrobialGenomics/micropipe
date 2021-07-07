@@ -384,7 +384,7 @@ process pycoqc {
 		path("pycoQC.html")
 		path("pycoqc_version.txt")
 	when:
-	params.basecalling & !params.skip_pycoqc & params.demultiplexer == "qcat"
+	params.basecalling & !params.skip_pycoqc
 	script:
 	"""
 	set +eu
