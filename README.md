@@ -11,7 +11,7 @@ The workflow below summarises the different steps of the pipeline (with each sel
 
 Micropipe has been written in Nextflow and uses Singularity containers. It can use both GPU and CPU resources. 
 
-For more information please see our publication here: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-021-07767-z
+For more information please see our publication here: https://doi.org/10.1186/s12864-021-07767-z.
 
 <p align="center">
   <img src="docs/Fig_workflow.png" alt="Workflow" width="400"/>
@@ -361,6 +361,4 @@ Planned upgrades:
 
 If you use microPIPE in your work, please cite:
 
-MicroPIPE: An end-to-end solution for high-quality complete bacterial genome construction  
-Valentine Murigneux, Leah W. Roberts, Brian M. Forde, Minh-Duy Phan, Nguyen Thi Khanh Nhu, Adam D. Irwin, Patrick N. A. Harris, David L. Paterson, Mark A. Schembri, David M. Whiley, Scott A. Beatson  
-bioRxiv 2021.02.02.429319; doi: https://doi.org/10.1101/2021.02.02.429319 
+MicroPIPE: validating an end-to-end workflow for high-quality complete bacterial genome construction. Murigneux V, Roberts LW, Forde BM, Phan MD, Nhu NTK, Irwin AD, Harris PNA, Paterson DL, Schembri MA, Whiley DM, Beatson SA. BMC Genomics. 2021 Jun 25;22(1):474. doi: [10.1186/s12864-021-07767-z](https://doi.org/10.1186/s12864-021-07767-z). 
