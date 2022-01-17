@@ -75,6 +75,10 @@ params {
 ```
 **1. Installing microPIPE**
 
+Download the microPIPE repository using the command:
+``` 
+git clone https://github.com/BeatsonLab-MicrobialGenomics/micropipe.git
+```
 microPIPE only requires the `main.nf` and `nexflow.config` files to run. You will also need to provide a samplesheet (explained below). 
 
 # Usage
