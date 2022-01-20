@@ -35,9 +35,9 @@ A tutorial is available on the GitHub page: https://github.com/BeatsonLab-Microb
 Use the configuration file to run microPIPE at Pawsey Zeus [here](./nextflow.config).
 
 **2. Prepare the samplesheet file (csv)**  
-See instructions at the microPIPE [GitHub page](https://github.com/BeatsonLab-MicrobialGenomics/micropipe#usage), section 2. Prepare the samplesheet file. 
+See instructions at the microPIPE [GitHub page](https://github.com/BeatsonLab-MicrobialGenomics/micropipe#usage), section 3. Prepare the samplesheet file. 
 
-**3. Prepare the slurm script (e.g. nextflow_batch_template.sh)**  
+**3. Prepare the slurm script (e.g. [nextflow_batch_template.sh](./nextflow_batch_template.sh))**  
 The pipeline will be launched using a Slurm script submitted to Zeus. This script will load the required modules, define the input/output directories and files, and include the nextflow command line with optional parameters. Note that the configuration profile definition for the Zeus cluster should be specified when launching the pipeline execution by using the "-profile zeus" command line option, as well as the slurm account allocation by using the "--slurm_account='director2172'" command line option (replace 'director2172' by your account identifier). 
 ```
 #!/bin/bash
@@ -147,8 +147,5 @@ You can collect usage metrics from your Canu run using the NCI Gadi optimised wo
 - The deployment of the workflow at the Pawsey Supercomputing Centre was supported by the Australian BioCommons via funding from Bioplatforms Australia, the Australian Research Data Commons (https://doi.org/10.47486/PL105) and the Queensland Government RICF programme. Bioplatforms Australia and the Australian Research Data Commons are funded by the National Collaborative Research Infrastructure Strategy (NCRIS).
 - Marco de la Pierre (Pawsey Supercomputing Centre) [@marcodelapierre](https://github.com/marcodelapierre)
 - Johan Gustafsson (Australian BioCommons) [@supernord](https://github.com/supernord)
-```
-Any attribution information that is relevant to the workflow being documented, or the infrastructure being used.
-```
 
 ---
