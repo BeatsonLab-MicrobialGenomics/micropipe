@@ -9,10 +9,7 @@
 #SBATCH --partition='longq'
 
 module load nextflow/20.07.1-multi
-#source activate nextflow
 module load singularity/3.6.4 
-
-#Cloud9: It is recommended to run the nextflow command in the background inside a tmux/screen session to avoid potential issues when submitting the pipeline in a batch script
 
 #directory containing the nextflow.config file and the main.nf script
 dir=/scratch/director2172/vmurigneux/micropipe
@@ -28,8 +25,10 @@ fast5_dir=${dir}/fast5_pass
 #fast5_dir=${dir}/fast5_pass/test
 csv=${dir}/test_data/samples_all_basecalling.csv
 #csv=${dir}/test_data/samples_1_basecalling.csv
-#nextflow main.nf --gpu true --basecalling  -profile zeus --slurm_account='director2172' --demultiplexing --samplesheet ${csv} --outdir ${out_dir} --fast5 ${fast5_dir} --datadir ${datadir}
-nextflow main.nf --gpu false --basecalling --guppy_num_callers 16 -profile zeus --slurm_account='director2172' --demultiplexing --samplesheet ${csv} --outdir ${out_dir} --fast5 ${fast5_dir} --datadir ${datadir}
+#run pipeline using both GPU and CPU resources
+#nextflow main.nf --gpu true --basecalling --guppy_num_callers 16 -profile zeus --slurm_account='director2172' --demultiplexing --samplesheet ${csv} --outdir ${out_dir} --fast5 ${fast5_dir} --datadir ${datadir}
+#run pipeline using CPU resources only
+nextflow main.nf --gpu false --basecalling -profile zeus --slurm_account='director2172' --demultiplexing --samplesheet ${csv} --outdir ${out_dir} --fast5 ${fast5_dir} --datadir ${datadir}
 
 #B) Workflow including basecalling and assembly (skip demultiplexing step)
 #fast5_dir=${dir}/fast5_pass
