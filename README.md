@@ -17,11 +17,11 @@ microPIPE: a pipeline for high-quality bacterial genome construction using ONT a
   - [Workflow summaries](#workflow-summaries)
       - [Metadata](#metadata)
       - [Component tools](#component-tools)
-      - [Third party tools /dependencies](#third-party-toolsdependencies)
+      - [Third party tools /dependencies](#third-party-tools--dependencies)
   - [Additional notes](#additional-notes)
-  - [Help/FAQ/Troubleshooting](#helpfaqtroubleshooting)
+  - [Help/FAQ/Troubleshooting](#help--faq--troubleshooting)
   - [Licence(s)](#licences)
-  - [Acknowledgements/citations/credits](#acknowledgementscitationscredits)
+  - [Acknowledgements/citations/credits](#acknowledgements--citations--credits)
 
 # Description
 
@@ -98,7 +98,7 @@ microPIPE requires the files `main.nf`, `nexflow.config` and a samplesheet file 
 
 When a Nexflow pipeline script is launched, Nextflow looks for a file named **nextflow.config** in the current directory. The configuration file defines default parameters values for the pipeline and cluster settings such as the executor (e.g. "slurm", "local") and queues to be used (https://www.nextflow.io/docs/latest/config.html). 
 
-The pipeline uses separated Singularity containers for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the [nextflow.config](https://www.nextflow.io/docs/latest/singularity.html) file: 
+The pipeline uses separated [Singularity containers](https://www.nextflow.io/docs/latest/singularity.html) for all processes. Nextflow will automatically pull the singularity images required to run the pipeline and cache those images in the singularity directory in the pipeline work directory by default or in the singularity.cacheDir specified in the [nextflow.config](./nextflow.config) file: 
 
 ```
 singularity {
@@ -389,13 +389,12 @@ The table below summarised the basecalling run time depending on the resources u
 
 ## Summary
 
-### Exemplar 1: Assembly of 12 *E.coli* ST131 samples using GPU and CPU resources
+### Exemplar 1: Assembly of 12 *E.coli* ST131 samples using GPU and CPU resources @ Pawsey
 
-You can collect usage metrics from your Canu run using the NCI Gadi optimised workflow using scripts available on the Sydney Informatics Hub, University of Sydney GitHub repository.
 * We used the *E.coli* data from the [microPIPE publication](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-021-07767-z) available from the NCBI SRA [BioProject PRJNA679678](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA679678/) (Oxford Nanopore) and the [BioProject PRJEB2968](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB2968) (Illumina). 
 
-* See Nextflow configuration file used [here](./nextflow.config) and slurm submission script [here](./nextflow_batch_template.sh). 
-* See Nextflow [HTML execution report](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.report.html), [trace report](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.trace.txt) and [HTML processes execution timeline](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.timeline.html). 
+* See Nextflow configuration file used [here](./pawsey/nextflow.config) and slurm submission script [here](./pawsey/nextflow_batch_template.sh). 
+* See Nextflow [HTML execution report](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.report.html), [trace report](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.trace.txt) and [HTML processes execution timeline](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_gpu.timeline.html). 
 
 * The table below summarised the assembly results for each strain. 
 
@@ -415,11 +414,11 @@ You can collect usage metrics from your Canu run using the NCI Gadi optimised wo
 |HVM2044| Chromosome <br> Plasmid A <br> Plasmid B <br> Plasmid C | 5003288 <br> 142959 <br> 18716 <br> 18345 | Yes <br> Yes <br> Yes <br> Yes |    
 
 
-### Exemplar 2: Assembly of 12 *E.coli* ST131 samples using CPU resources 
+### Exemplar 2: Assembly of 12 *E.coli* ST131 samples using CPU resources @ Pawsey
 
-* See Nextflow configuration file used [here](./nextflow.config) and slurm submission script [here](./nextflow_batch_template.sh). 
+* See Nextflow configuration file used [here](./pawsey/nextflow.config) and slurm submission script [here](./nextflow_batch_template.sh). 
 
-* See Nextflow [HTML execution report](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.report.html), [trace report](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.trace.txt) and [HTML processes execution timeline](./micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.timeline.html). 
+* See Nextflow [HTML execution report](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.report.html), [trace report](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.trace.txt) and [HTML processes execution timeline](./pawsey/micropipe_ecoli_ST131_pawsey_guppy3.6.1_cpu.timeline.html). 
 
 -----
 
@@ -457,12 +456,6 @@ You can collect usage metrics from your Canu run using the NCI Gadi optimised wo
 | Racon           |   See workflow version   | microPIPE |
 | Medaka           |   See workflow version   | microPIPE |
 | NextPolish           |   See workflow version   | microPIPE |
-
------
-
-## Required (minimum) inputs/parameters
-
-    The minimum inputs required for the workflow to run.
 
 -----
 
