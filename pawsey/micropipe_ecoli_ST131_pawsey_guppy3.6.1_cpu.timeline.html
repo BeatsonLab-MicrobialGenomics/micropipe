@@ -1,0 +1,296 @@
+<!doctype html>
+<!--
+  ~ Copyright 2013-2019, Centre for Genomic Regulation (CRG)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + prot + "code.jquery.com/jquery-latest.min.js' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "d3js.org/d3.v3.min.js' charset='utf-8' type='text/javascript' %3E%3C/script%3E"));
+document.write(unescape("%3Cscript src='" + prot + "cdn.rawgit.com/nextflow-io/d3-timeline/82622c4cc35bac7283b3a317826b0709ac1ae476/src/d3-timeline.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<style type="text/css">
+* {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 10px;
+}
+
+div#timeline g text {
+  font-size: 13px;
+}
+
+text.timeline-label {
+  font-size: 13px;
+}
+
+#timeline2 .axis {
+  transform: translate(0px,30px);
+  -ms-transform: translate(0px,30px); /* IE 9 */
+  -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+  -o-transform: translate(0px,30px); /* Opera */
+  -moz-transform: translate(0px,30px); /* Firefox */
+}
+
+.coloredDiv {
+  height:20px; width:20px; float:left;
+}
+
+#footer {
+  padding-top: 3em; color: #bfbfbf; font-size: 13px;
+}
+
+#footer a:visited {
+  color: #bfbfbf;
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+var handler=null;
+// see https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c
+var colors = d3.scale.category20c().domain(d3.range(0,20)).range()
+
+function c0(index) { return "#9c9c9c"; }
+function c1(index) { return "#bdbdbd"; }
+function c2(index) { return colors[index % 16]; } // <-- note: uses only the first 16 colors
+
+var elapsed="1h 42m 17s"
+var beginningMillis=1627359713554;
+var endingMillis=1628212601228;
+var data=[
+{"label": "basecalling_demultiplexing_guppy_cpu (1)", "times": [{"starting_time": 1627359713554, "ending_time": 1627359717898, "color":c1(0)}, {"starting_time": 1627359717898, "ending_time": 1627688601345, "color":c0(0), "label": "3d 19h 21m 31s \/ 16 GB \/ CACHED"}, {"starting_time": 1627688601345, "ending_time": 1627688604959, "color":c1(0)}]},
+{"label": "assembly:porechop (S24)", "times": [{"starting_time": 1627688607265, "ending_time": 1627688647222, "color":c1(1)}, {"starting_time": 1627688647222, "ending_time": 1627690709222, "color":c0(1), "label": "34m 55s \/ 1.6 GB \/ CACHED"}]},
+{"label": "pycoqc (1)", "times": [{"starting_time": 1627688606899, "ending_time": 1627688646887, "color":c1(2)}, {"starting_time": 1627688646887, "ending_time": 1627688696887, "color":c0(2), "label": "1m 20s \/ 2.1 GB \/ CACHED"}]},
+{"label": "assembly:porechop (S34)", "times": [{"starting_time": 1627688607056, "ending_time": 1627688647198, "color":c1(1)}, {"starting_time": 1627688647198, "ending_time": 1627691644198, "color":c0(1), "label": "50m 30s \/ 2.4 GB \/ CACHED"}]},
+{"label": "assembly:japsa (S24)", "times": [{"starting_time": 1627690702164, "ending_time": 1627690737016, "color":c1(3)}, {"starting_time": 1627690737016, "ending_time": 1627690933376, "color":c0(3), "label": "3m 55s \/ 583.2 MB \/ CACHED"}, {"starting_time": 1627690933376, "ending_time": 1627690937050, "color":c1(3)}]},
+{"label": "assembly:japsa (S34)", "times": [{"starting_time": 1627691637178, "ending_time": 1627691657098, "color":c1(3)}, {"starting_time": 1627691657098, "ending_time": 1627691994485, "color":c0(3), "label": "6m 10s \/ 583.9 MB \/ CACHED"}, {"starting_time": 1627691994485, "ending_time": 1627692007108, "color":c1(3)}]},
+{"label": "assembly:flye (S34)", "times": [{"starting_time": 1627692007215, "ending_time": 1627692017127, "color":c1(4)}, {"starting_time": 1627692017127, "ending_time": 1627694595127, "color":c0(4), "label": "43m 20s \/ 8 GB \/ CACHED"}, {"starting_time": 1627694595127, "ending_time": 1627694607299, "color":c1(4)}]},
+{"label": "assembly:flye (S24)", "times": [{"starting_time": 1627690937115, "ending_time": 1627690972033, "color":c1(4)}, {"starting_time": 1627690972033, "ending_time": 1627692074033, "color":c0(4), "label": "19m \/ 5.8 GB \/ CACHED"}, {"starting_time": 1627692074033, "ending_time": 1627692077143, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S34)", "times": [{"starting_time": 1627694607509, "ending_time": 1627694637272, "color":c1(5)}, {"starting_time": 1627694637272, "ending_time": 1627697958612, "color":c0(5), "label": "55m 55s \/ 3 GB \/ CACHED"}, {"starting_time": 1627697958612, "ending_time": 1627697962496, "color":c1(5)}]},
+{"label": "assembly:racon_cpu (S24)", "times": [{"starting_time": 1627692077185, "ending_time": 1627692112102, "color":c1(5)}, {"starting_time": 1627692112102, "ending_time": 1627693495327, "color":c0(5), "label": "23m 45s \/ 1.6 GB \/ CACHED"}, {"starting_time": 1627693495327, "ending_time": 1627693502282, "color":c1(5)}]},
+{"label": "assembly:porechop (S37)", "times": [{"starting_time": 1627688607460, "ending_time": 1627688647266, "color":c1(1)}, {"starting_time": 1627688647266, "ending_time": 1627690030266, "color":c0(1), "label": "23m 40s \/ 1.6 GB \/ CACHED"}]},
+{"label": "assembly:medaka_cpu (S34)", "times": [{"starting_time": 1627697962535, "ending_time": 1627697992438, "color":c1(6)}, {"starting_time": 1627697992438, "ending_time": 1627698472438, "color":c0(6), "label": "8m 30s \/ 5.6 GB \/ CACHED"}, {"starting_time": 1627698472438, "ending_time": 1627698472543, "color":c1(6)}]},
+{"label": "assembly:japsa (S37)", "times": [{"starting_time": 1627690027060, "ending_time": 1627690037006, "color":c1(3)}, {"starting_time": 1627690037006, "ending_time": 1627690235465, "color":c0(3), "label": "3m 40s \/ 582.5 MB \/ CACHED"}, {"starting_time": 1627690235465, "ending_time": 1627690247050, "color":c1(3)}]},
+{"label": "assembly:medaka_cpu (S24)", "times": [{"starting_time": 1627693502311, "ending_time": 1627693522239, "color":c1(6)}, {"starting_time": 1627693522239, "ending_time": 1627693780239, "color":c0(6), "label": "4m 40s \/ 5.3 GB \/ CACHED"}, {"starting_time": 1627693780239, "ending_time": 1627693782281, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S34)", "times": [{"starting_time": 1627698472603, "ending_time": 1627698507463, "color":c1(7)}, {"starting_time": 1627698507463, "ending_time": 1627699017708, "color":c0(7), "label": "9m 5s \/ 2.1 GB \/ CACHED"}]},
+{"label": "assembly:nextpolish (S24)", "times": [{"starting_time": 1627693782376, "ending_time": 1627693792223, "color":c1(7)}, {"starting_time": 1627693792223, "ending_time": 1627694370474, "color":c0(7), "label": "9m 55s \/ 2.5 GB \/ CACHED"}, {"starting_time": 1627694370474, "ending_time": 1627694377285, "color":c1(7)}]},
+{"label": "assembly:porechop (S39)", "times": [{"starting_time": 1627688607812, "ending_time": 1627688647359, "color":c1(1)}, {"starting_time": 1627688647359, "ending_time": 1627691250359, "color":c0(1), "label": "43m 54s \/ 2.4 GB \/ CACHED"}]},
+{"label": "assembly:fixstart (S24)", "times": [{"starting_time": 1627694377419, "ending_time": 1627694392257, "color":c1(8)}, {"starting_time": 1627694392257, "ending_time": 1627694482257, "color":c0(8), "label": "1m 50s \/ 205 MB \/ CACHED"}, {"starting_time": 1627694482257, "ending_time": 1627694487263, "color":c1(8)}]},
+{"label": "assembly:japsa (S39)", "times": [{"starting_time": 1627691242163, "ending_time": 1627691277065, "color":c1(3)}, {"starting_time": 1627691277065, "ending_time": 1627691624442, "color":c0(3), "label": "6m 25s \/ 582.2 MB \/ CACHED"}, {"starting_time": 1627691624442, "ending_time": 1627691627088, "color":c1(3)}]},
+{"label": "assembly:quast (S24)", "times": [{"starting_time": 1627694487397, "ending_time": 1627694512261, "color":c1(9)}, {"starting_time": 1627694512261, "ending_time": 1627694517072, "color":c0(9), "label": "39.9s \/ 85.9 MB \/ CACHED"}, {"starting_time": 1627694517072, "ending_time": 1627694527268, "color":c1(9)}]},
+{"label": "assembly:fixstart (S34)", "times": [{"starting_time": 1627699017590, "ending_time": 1627699052487, "color":c1(8)}, {"starting_time": 1627699052487, "ending_time": 1627699128487, "color":c0(8), "label": "1m 55s \/ 212 MB \/ CACHED"}, {"starting_time": 1627699128487, "ending_time": 1627699132625, "color":c1(8)}]},
+{"label": "assembly:porechop (S65)", "times": [{"starting_time": 1627688607622, "ending_time": 1627688647301, "color":c1(1)}, {"starting_time": 1627688647301, "ending_time": 1627690226301, "color":c0(1), "label": "26m 54s \/ 1.9 GB \/ CACHED"}]},
+{"label": "assembly:japsa (S65)", "times": [{"starting_time": 1627690222055, "ending_time": 1627690256984, "color":c1(3)}, {"starting_time": 1627690256984, "ending_time": 1627690476831, "color":c0(3), "label": "4m 15s \/ 583.1 MB \/ CACHED"}, {"starting_time": 1627690476831, "ending_time": 1627690477033, "color":c1(3)}]},
+{"label": "assembly:quast (S34)", "times": [{"starting_time": 1627699132675, "ending_time": 1627699172492, "color":c1(9)}, {"starting_time": 1627699172492, "ending_time": 1627699180260, "color":c0(9), "label": "50.2s \/ 86 MB \/ CACHED"}, {"starting_time": 1627699180260, "ending_time": 1627699182889, "color":c1(9)}]},
+{"label": "assembly:porechop (S96)", "times": [{"starting_time": 1627688607995, "ending_time": 1627688647419, "color":c1(1)}, {"starting_time": 1627688647419, "ending_time": 1627690721419, "color":c0(1), "label": "35m 4s \/ 2.2 GB \/ CACHED"}]},
+{"label": "assembly:japsa (S96)", "times": [{"starting_time": 1627690712172, "ending_time": 1627690737020, "color":c1(3)}, {"starting_time": 1627690737020, "ending_time": 1627691067726, "color":c0(3), "label": "5m 55s \/ 584 MB \/ CACHED"}]},
+{"label": "assembly:porechop (S97)", "times": [{"starting_time": 1627688608221, "ending_time": 1627688647464, "color":c1(1)}, {"starting_time": 1627688647464, "ending_time": 1627692028464, "color":c0(1), "label": "56m 54s \/ 2.7 GB \/ CACHED"}]},
+{"label": "assembly:japsa (S97)", "times": [{"starting_time": 1627692022274, "ending_time": 1627692052100, "color":c1(3)}, {"starting_time": 1627692052100, "ending_time": 1627692479665, "color":c0(3), "label": "7m 45s \/ 582.5 MB \/ CACHED"}, {"starting_time": 1627692479665, "ending_time": 1627692487220, "color":c1(3)}]},
+{"label": "assembly:flye (S37)", "times": [{"starting_time": 1627690247149, "ending_time": 1627690277001, "color":c1(4)}, {"starting_time": 1627690277001, "ending_time": 1627691795001, "color":c0(4), "label": "25m 55s \/ 6.6 GB \/ CACHED"}, {"starting_time": 1627691795001, "ending_time": 1627691802124, "color":c1(4)}]},
+{"label": "assembly:porechop (S112)", "times": [{"starting_time": 1627688608360, "ending_time": 1627688647504, "color":c1(1)}, {"starting_time": 1627688647504, "ending_time": 1627690864504, "color":c0(1), "label": "37m 34s \/ 1.8 GB \/ CACHED"}]},
+{"label": "assembly:racon_cpu (S37)", "times": [{"starting_time": 1627691802243, "ending_time": 1627691812089, "color":c1(5)}, {"starting_time": 1627691812089, "ending_time": 1627693274823, "color":c0(5), "label": "24m 40s \/ 2 GB \/ CACHED"}, {"starting_time": 1627693274823, "ending_time": 1627693282299, "color":c1(5)}]},
+{"label": "assembly:japsa (S112)", "times": [{"starting_time": 1627690862406, "ending_time": 1627690877036, "color":c1(3)}, {"starting_time": 1627690877036, "ending_time": 1627691091484, "color":c0(3), "label": "4m \/ 582.8 MB \/ CACHED"}, {"starting_time": 1627691091484, "ending_time": 1627691102090, "color":c1(3)}]},
+{"label": "assembly:medaka_cpu (S37)", "times": [{"starting_time": 1627693282346, "ending_time": 1627693312196, "color":c1(6)}, {"starting_time": 1627693312196, "ending_time": 1627693647196, "color":c0(6), "label": "6m 5s \/ 5.4 GB \/ CACHED"}, {"starting_time": 1627693647196, "ending_time": 1627693647253, "color":c1(6)}]},
+{"label": "assembly:flye (S39)", "times": [{"starting_time": 1627691627131, "ending_time": 1627691657095, "color":c1(4)}, {"starting_time": 1627691657095, "ending_time": 1627694915095, "color":c0(4), "label": "55m \/ 7.8 GB \/ CACHED"}, {"starting_time": 1627694915095, "ending_time": 1627694927322, "color":c1(4)}]},
+{"label": "assembly:nextpolish (S37)", "times": [{"starting_time": 1627693647339, "ending_time": 1627693672220, "color":c1(7)}, {"starting_time": 1627693672220, "ending_time": 1627694212923, "color":c0(7), "label": "9m 30s \/ 1.8 GB \/ CACHED"}, {"starting_time": 1627694212923, "ending_time": 1627694217289, "color":c1(7)}]},
+{"label": "assembly:racon_cpu (S39)", "times": [{"starting_time": 1627694927505, "ending_time": 1627694962301, "color":c1(5)}, {"starting_time": 1627694962301, "ending_time": 1627698367595, "color":c0(5), "label": "57m 30s \/ 2.9 GB \/ CACHED"}, {"starting_time": 1627698367595, "ending_time": 1627698377509, "color":c1(5)}]},
+{"label": "assembly:porechop (S116)", "times": [{"starting_time": 1627688608544, "ending_time": 1627688647588, "color":c1(1)}, {"starting_time": 1627688647588, "ending_time": 1627690272588, "color":c0(1), "label": "27m 38s \/ 2.2 GB \/ CACHED"}]},
+{"label": "assembly:fixstart (S37)", "times": [{"starting_time": 1627694217330, "ending_time": 1627694242264, "color":c1(8)}, {"starting_time": 1627694242264, "ending_time": 1627694326264, "color":c0(8), "label": "2m \/ 205.9 MB \/ CACHED"}, {"starting_time": 1627694326264, "ending_time": 1627694337257, "color":c1(8)}]},
+{"label": "assembly:medaka_cpu (S39)", "times": [{"starting_time": 1627698377551, "ending_time": 1627698412458, "color":c1(6)}, {"starting_time": 1627698412458, "ending_time": 1627698819458, "color":c0(6), "label": "7m 25s \/ 5.7 GB \/ CACHED"}, {"starting_time": 1627698819458, "ending_time": 1627698823012, "color":c1(6)}]},
+{"label": "assembly:japsa (S116)", "times": [{"starting_time": 1627690267148, "ending_time": 1627690277008, "color":c1(3)}, {"starting_time": 1627690277008, "ending_time": 1627690591445, "color":c0(3), "label": "5m 35s \/ 580.8 MB \/ CACHED"}, {"starting_time": 1627690591445, "ending_time": 1627690602011, "color":c1(3)}]},
+{"label": "assembly:nextpolish (S39)", "times": [{"starting_time": 1627698823048, "ending_time": 1627698837481, "color":c1(7)}, {"starting_time": 1627698837481, "ending_time": 1627699385775, "color":c0(7), "label": "9m 25s \/ 2 GB \/ CACHED"}, {"starting_time": 1627699385775, "ending_time": 1627699387613, "color":c1(7)}]},
+{"label": "assembly:fixstart (S39)", "times": [{"starting_time": 1627699387656, "ending_time": 1627699412501, "color":c1(8)}, {"starting_time": 1627699412501, "ending_time": 1627699494501, "color":c0(8), "label": "1m 50s \/ 214.4 MB \/ CACHED"}, {"starting_time": 1627699494501, "ending_time": 1627699497557, "color":c1(8)}]},
+{"label": "assembly:porechop (S129)", "times": [{"starting_time": 1627688608749, "ending_time": 1627688666886, "color":c1(1)}, {"starting_time": 1627688666886, "ending_time": 1627689815886, "color":c0(1), "label": "20m 13s \/ 1.5 GB \/ CACHED"}, {"starting_time": 1627689815886, "ending_time": 1627689822010, "color":c1(1)}]},
+{"label": "assembly:japsa (S129)", "times": [{"starting_time": 1627689822293, "ending_time": 1627689836969, "color":c1(3)}, {"starting_time": 1627689836969, "ending_time": 1627690016224, "color":c0(3), "label": "3m 20s \/ 582.4 MB \/ CACHED"}, {"starting_time": 1627690016224, "ending_time": 1627690021979, "color":c1(3)}]},
+{"label": "assembly:quast (S37)", "times": [{"starting_time": 1627694337361, "ending_time": 1627694362282, "color":c1(9)}, {"starting_time": 1627694362282, "ending_time": 1627694366415, "color":c0(9), "label": "34.9s \/ 74.9 MB \/ CACHED"}, {"starting_time": 1627694366415, "ending_time": 1627694372262, "color":c1(9)}]},
+{"label": "assembly:porechop (EC958)", "times": [{"starting_time": 1627688608901, "ending_time": 1627688661887, "color":c1(1)}, {"starting_time": 1627688661887, "ending_time": 1627693240887, "color":c0(1), "label": "1h 17m 18s \/ 3.9 GB \/ CACHED"}, {"starting_time": 1627693240887, "ending_time": 1627693247225, "color":c1(1)}]},
+{"label": "assembly:japsa (EC958)", "times": [{"starting_time": 1627693247268, "ending_time": 1627693282371, "color":c1(3)}, {"starting_time": 1627693282371, "ending_time": 1627693903358, "color":c0(3), "label": "11m 5s \/ 581.2 MB \/ CACHED"}, {"starting_time": 1627693903358, "ending_time": 1627693912231, "color":c1(3)}]},
+{"label": "assembly:quast (S39)", "times": [{"starting_time": 1627699497661, "ending_time": 1627699532504, "color":c1(9)}, {"starting_time": 1627699532504, "ending_time": 1627699536531, "color":c0(9), "label": "39.9s \/ 77.2 MB \/ CACHED"}, {"starting_time": 1627699536531, "ending_time": 1627699537585, "color":c1(9)}]},
+{"label": "assembly:porechop (HVM2044)", "times": [{"starting_time": 1627688609084, "ending_time": 1627688661897, "color":c1(1)}, {"starting_time": 1627688661897, "ending_time": 1627690209897, "color":c0(1), "label": "26m 43s \/ 2.1 GB \/ CACHED"}, {"starting_time": 1627690209897, "ending_time": 1627690212032, "color":c1(1)}]},
+{"label": "assembly:japsa (HVM2044)", "times": [{"starting_time": 1627690212143, "ending_time": 1627690217019, "color":c1(3)}, {"starting_time": 1627690217019, "ending_time": 1627690500122, "color":c0(3), "label": "5m 5s \/ 583.1 MB \/ CACHED"}, {"starting_time": 1627690500122, "ending_time": 1627690517055, "color":c1(3)}]},
+{"label": "assembly:flye (S96)", "times": [{"starting_time": 1627691067151, "ending_time": 1627691092040, "color":c1(4)}, {"starting_time": 1627691092040, "ending_time": 1627692682040, "color":c0(4), "label": "26m 55s \/ 6.8 GB \/ CACHED"}, {"starting_time": 1627692682040, "ending_time": 1627692682212, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S96)", "times": [{"starting_time": 1627692682552, "ending_time": 1627692712160, "color":c1(5)}, {"starting_time": 1627692712160, "ending_time": 1627695554215, "color":c0(5), "label": "47m 55s \/ 2.5 GB \/ CACHED"}, {"starting_time": 1627695554215, "ending_time": 1627695557429, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (S96)", "times": [{"starting_time": 1627695557503, "ending_time": 1627695592325, "color":c1(6)}, {"starting_time": 1627695592325, "ending_time": 1627695997325, "color":c0(6), "label": "7m 25s \/ 5.6 GB \/ CACHED"}, {"starting_time": 1627695997325, "ending_time": 1627696002427, "color":c1(6)}]},
+{"label": "assembly:flye (S65)", "times": [{"starting_time": 1627690477086, "ending_time": 1627690496999, "color":c1(4)}, {"starting_time": 1627690496999, "ending_time": 1627692357999, "color":c0(4), "label": "31m 25s \/ 6.1 GB \/ CACHED"}, {"starting_time": 1627692357999, "ending_time": 1627692362165, "color":c1(4)}]},
+{"label": "assembly:nextpolish (S96)", "times": [{"starting_time": 1627696002570, "ending_time": 1627696017536, "color":c1(7)}, {"starting_time": 1627696017536, "ending_time": 1627696532259, "color":c0(7), "label": "8m 55s \/ 2 GB \/ CACHED"}, {"starting_time": 1627696532259, "ending_time": 1627696537383, "color":c1(7)}]},
+{"label": "assembly:racon_cpu (S65)", "times": [{"starting_time": 1627692362219, "ending_time": 1627692382137, "color":c1(5)}, {"starting_time": 1627692382137, "ending_time": 1627694408471, "color":c0(5), "label": "34m 10s \/ 2.3 GB \/ CACHED"}, {"starting_time": 1627694408471, "ending_time": 1627694412291, "color":c1(5)}]},
+{"label": "assembly:fixstart (S96)", "times": [{"starting_time": 1627696537420, "ending_time": 1627696557371, "color":c1(8)}, {"starting_time": 1627696557371, "ending_time": 1627696636371, "color":c0(8), "label": "1m 45s \/ 210.7 MB \/ CACHED"}, {"starting_time": 1627696636371, "ending_time": 1627696642387, "color":c1(8)}]},
+{"label": "assembly:quast (S96)", "times": [{"starting_time": 1627696642535, "ending_time": 1627696677381, "color":c1(9)}, {"starting_time": 1627696677381, "ending_time": 1627696681135, "color":c0(9), "label": "39.9s \/ 75.4 MB \/ CACHED"}, {"starting_time": 1627696681135, "ending_time": 1627696682435, "color":c1(9)}]},
+{"label": "assembly:medaka_cpu (S65)", "times": [{"starting_time": 1627694412331, "ending_time": 1627694422279, "color":c1(6)}, {"starting_time": 1627694422279, "ending_time": 1627694731279, "color":c0(6), "label": "5m 20s \/ 5.5 GB \/ CACHED"}, {"starting_time": 1627694731279, "ending_time": 1627694732316, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S65)", "times": [{"starting_time": 1627694732360, "ending_time": 1627694752274, "color":c1(7)}, {"starting_time": 1627694752274, "ending_time": 1627695288959, "color":c0(7), "label": "9m 25s \/ 2.1 GB \/ CACHED"}, {"starting_time": 1627695288959, "ending_time": 1627695297355, "color":c1(7)}]},
+{"label": "assembly:fixstart (S65)", "times": [{"starting_time": 1627695297395, "ending_time": 1627695322326, "color":c1(8)}, {"starting_time": 1627695322326, "ending_time": 1627695396326, "color":c0(8), "label": "1m 50s \/ 205.4 MB \/ CACHED"}, {"starting_time": 1627695396326, "ending_time": 1627695407312, "color":c1(8)}]},
+{"label": "assembly:quast (S65)", "times": [{"starting_time": 1627695407377, "ending_time": 1627695442333, "color":c1(9)}, {"starting_time": 1627695442333, "ending_time": 1627695446873, "color":c0(9), "label": "49.9s \/ 86.5 MB \/ CACHED"}, {"starting_time": 1627695446873, "ending_time": 1627695457318, "color":c1(9)}]},
+{"label": "assembly:flye (S97)", "times": [{"starting_time": 1627692487318, "ending_time": 1627692502160, "color":c1(4)}, {"starting_time": 1627692502160, "ending_time": 1627695318160, "color":c0(4), "label": "47m 20s \/ 8.6 GB \/ CACHED"}, {"starting_time": 1627695318160, "ending_time": 1627695327344, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S97)", "times": [{"starting_time": 1627695327488, "ending_time": 1627695352309, "color":c1(5)}, {"starting_time": 1627695352309, "ending_time": 1627699278263, "color":c0(5), "label": "1h 5m 55s \/ 3.6 GB \/ CACHED"}, {"starting_time": 1627699278263, "ending_time": 1627699282570, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (S97)", "times": [{"starting_time": 1627699282601, "ending_time": 1627699307511, "color":c1(6)}, {"starting_time": 1627699307511, "ending_time": 1627699819511, "color":c0(6), "label": "9m 5s \/ 5.9 GB \/ CACHED"}, {"starting_time": 1627699819511, "ending_time": 1627699827616, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S97)", "times": [{"starting_time": 1627699827697, "ending_time": 1627699852541, "color":c1(7)}, {"starting_time": 1627699852541, "ending_time": 1627700363177, "color":c0(7), "label": "9m \/ 2.1 GB \/ CACHED"}, {"starting_time": 1627700363177, "ending_time": 1627700367768, "color":c1(7)}]},
+{"label": "assembly:fixstart (S97)", "times": [{"starting_time": 1627700367804, "ending_time": 1627700392584, "color":c1(8)}, {"starting_time": 1627700392584, "ending_time": 1627700476584, "color":c0(8), "label": "1m 55s \/ 213.4 MB \/ CACHED"}, {"starting_time": 1627700476584, "ending_time": 1627700482642, "color":c1(8)}]},
+{"label": "assembly:flye (S112)", "times": [{"starting_time": 1627691102133, "ending_time": 1627691117058, "color":c1(4)}, {"starting_time": 1627691117058, "ending_time": 1627693029058, "color":c0(4), "label": "32m 20s \/ 5.9 GB \/ CACHED"}, {"starting_time": 1627693029058, "ending_time": 1627693042228, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S112)", "times": [{"starting_time": 1627693042296, "ending_time": 1627693077178, "color":c1(5)}, {"starting_time": 1627693077178, "ending_time": 1627695038894, "color":c0(5), "label": "33m 20s \/ 2.3 GB \/ CACHED"}, {"starting_time": 1627695038894, "ending_time": 1627695042329, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (S112)", "times": [{"starting_time": 1627695042425, "ending_time": 1627695052292, "color":c1(6)}, {"starting_time": 1627695052292, "ending_time": 1627695362292, "color":c0(6), "label": "5m 20s \/ 5.5 GB \/ CACHED"}, {"starting_time": 1627695362292, "ending_time": 1627695362367, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S112)", "times": [{"starting_time": 1627695362500, "ending_time": 1627695382329, "color":c1(7)}, {"starting_time": 1627695382329, "ending_time": 1627695880020, "color":c0(7), "label": "8m 45s \/ 2 GB \/ CACHED"}, {"starting_time": 1627695880020, "ending_time": 1627695887387, "color":c1(7)}]},
+{"label": "assembly:quast (S97)", "times": [{"starting_time": 1627700482704, "ending_time": 1627700512591, "color":c1(9)}, {"starting_time": 1627700512591, "ending_time": 1627700516734, "color":c0(9), "label": "40s \/ 88.8 MB \/ CACHED"}, {"starting_time": 1627700516734, "ending_time": 1627700522692, "color":c1(9)}]},
+{"label": "assembly:fixstart (S112)", "times": [{"starting_time": 1627695887429, "ending_time": 1627695927353, "color":c1(8)}, {"starting_time": 1627695927353, "ending_time": 1627696012353, "color":c0(8), "label": "2m 10s \/ 205.4 MB \/ CACHED"}, {"starting_time": 1627696012353, "ending_time": 1627696017451, "color":c1(8)}]},
+{"label": "assembly:quast (S112)", "times": [{"starting_time": 1627696017494, "ending_time": 1627696047370, "color":c1(9)}, {"starting_time": 1627696047370, "ending_time": 1627696051700, "color":c0(9), "label": "39.9s \/ 75.4 MB \/ CACHED"}, {"starting_time": 1627696051700, "ending_time": 1627696057347, "color":c1(9)}]},
+{"label": "assembly:flye (S116)", "times": [{"starting_time": 1627690602108, "ending_time": 1627690617005, "color":c1(4)}, {"starting_time": 1627690617005, "ending_time": 1627692927005, "color":c0(4), "label": "38m 50s \/ 6.8 GB \/ CACHED"}, {"starting_time": 1627692927005, "ending_time": 1627692932281, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S116)", "times": [{"starting_time": 1627692932346, "ending_time": 1627692952164, "color":c1(5)}, {"starting_time": 1627692952164, "ending_time": 1627694912117, "color":c0(5), "label": "33m \/ 2.8 GB \/ CACHED"}, {"starting_time": 1627694912117, "ending_time": 1627694912335, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (S116)", "times": [{"starting_time": 1627694912379, "ending_time": 1627694932287, "color":c1(6)}, {"starting_time": 1627694932287, "ending_time": 1627695290287, "color":c0(6), "label": "6m 20s \/ 5.7 GB \/ CACHED"}, {"starting_time": 1627695290287, "ending_time": 1627695292448, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S116)", "times": [{"starting_time": 1627695292554, "ending_time": 1627695322323, "color":c1(7)}, {"starting_time": 1627695322323, "ending_time": 1627695811144, "color":c0(7), "label": "8m 45s \/ 2 GB \/ CACHED"}, {"starting_time": 1627695811144, "ending_time": 1627695817365, "color":c1(7)}]},
+{"label": "assembly:fixstart (S116)", "times": [{"starting_time": 1627695817464, "ending_time": 1627695832336, "color":c1(8)}, {"starting_time": 1627695832336, "ending_time": 1627695918336, "color":c0(8), "label": "1m 45s \/ 199.7 MB \/ CACHED"}, {"starting_time": 1627695918336, "ending_time": 1627695922337, "color":c1(8)}]},
+{"label": "assembly:flye (S129)", "times": [{"starting_time": 1627690022061, "ending_time": 1627690037001, "color":c1(4)}, {"starting_time": 1627690037001, "ending_time": 1627691434001, "color":c0(4), "label": "23m 40s \/ 5.4 GB \/ CACHED"}, {"starting_time": 1627691434001, "ending_time": 1627691442100, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (S129)", "times": [{"starting_time": 1627691442167, "ending_time": 1627691452070, "color":c1(5)}, {"starting_time": 1627691452070, "ending_time": 1627692672566, "color":c0(5), "label": "20m 35s \/ 1.8 GB \/ CACHED"}, {"starting_time": 1627692672566, "ending_time": 1627692677204, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (S129)", "times": [{"starting_time": 1627692677281, "ending_time": 1627692712154, "color":c1(6)}, {"starting_time": 1627692712154, "ending_time": 1627693059154, "color":c0(6), "label": "6m 25s \/ 5.4 GB \/ CACHED"}, {"starting_time": 1627693059154, "ending_time": 1627693062219, "color":c1(6)}]},
+{"label": "assembly:nextpolish (S129)", "times": [{"starting_time": 1627693062372, "ending_time": 1627693077181, "color":c1(7)}, {"starting_time": 1627693077181, "ending_time": 1627693672605, "color":c0(7), "label": "10m 15s \/ 2.3 GB \/ CACHED"}, {"starting_time": 1627693672605, "ending_time": 1627693677271, "color":c1(7)}]},
+{"label": "assembly:fixstart (S129)", "times": [{"starting_time": 1627693677886, "ending_time": 1627693702242, "color":c1(8)}, {"starting_time": 1627693702242, "ending_time": 1627693788242, "color":c0(8), "label": "2m 4s \/ 215.5 MB \/ CACHED"}, {"starting_time": 1627693788242, "ending_time": 1627693802231, "color":c1(8)}]},
+{"label": "assembly:quast (S116)", "times": [{"starting_time": 1627695922404, "ending_time": 1627695957336, "color":c1(9)}, {"starting_time": 1627695957336, "ending_time": 1627695962538, "color":c0(9), "label": "44.9s \/ 88.2 MB \/ CACHED"}, {"starting_time": 1627695962538, "ending_time": 1627695967342, "color":c1(9)}]},
+{"label": "assembly:quast (S129)", "times": [{"starting_time": 1627693802405, "ending_time": 1627693822239, "color":c1(9)}, {"starting_time": 1627693822239, "ending_time": 1627693827226, "color":c0(9), "label": "29.8s \/ 75.8 MB \/ CACHED"}, {"starting_time": 1627693827226, "ending_time": 1627693832227, "color":c1(9)}]},
+{"label": "assembly:flye (EC958)", "times": [{"starting_time": 1627693912352, "ending_time": 1627693942249, "color":c1(4)}, {"starting_time": 1627693942249, "ending_time": 1627697253249, "color":c0(4), "label": "55m 45s \/ 11 GB \/ CACHED"}, {"starting_time": 1627697253249, "ending_time": 1627697257462, "color":c1(4)}]},
+{"label": "assembly:racon_cpu (EC958)", "times": [{"starting_time": 1628206505128, "ending_time": 1628206510040, "color":c1(5)}, {"starting_time": 1628206510040, "ending_time": 1628211365744, "color":c2(5), "label": "1h 21m 30s \/ 4.9 GB"}, {"starting_time": 1628211365744, "ending_time": 1628211395047, "color":c1(5)}]},
+{"label": "assembly:flye (HVM2044)", "times": [{"starting_time": 1627690517118, "ending_time": 1627690557001, "color":c1(4)}, {"starting_time": 1627690557001, "ending_time": 1627692573001, "color":c0(4), "label": "34m 15s \/ 6.7 GB \/ CACHED"}]},
+{"label": "assembly:racon_cpu (HVM2044)", "times": [{"starting_time": 1627692572215, "ending_time": 1627692597154, "color":c1(5)}, {"starting_time": 1627692597154, "ending_time": 1627695068359, "color":c0(5), "label": "41m 40s \/ 2.8 GB \/ CACHED"}, {"starting_time": 1627695068359, "ending_time": 1627695072339, "color":c1(5)}]},
+{"label": "assembly:medaka_cpu (HVM2044)", "times": [{"starting_time": 1627695072394, "ending_time": 1627695082329, "color":c1(6)}, {"starting_time": 1627695082329, "ending_time": 1627695530329, "color":c0(6), "label": "7m 40s \/ 5.6 GB \/ CACHED"}, {"starting_time": 1627695530329, "ending_time": 1627695532350, "color":c1(6)}]},
+{"label": "assembly:nextpolish (HVM2044)", "times": [{"starting_time": 1627695532405, "ending_time": 1627695562341, "color":c1(7)}, {"starting_time": 1627695562341, "ending_time": 1627696151103, "color":c0(7), "label": "10m 30s \/ 3.6 GB \/ CACHED"}, {"starting_time": 1627696151103, "ending_time": 1627696162404, "color":c1(7)}]},
+{"label": "assembly:fixstart (HVM2044)", "times": [{"starting_time": 1627696162429, "ending_time": 1627696197352, "color":c1(8)}, {"starting_time": 1627696197352, "ending_time": 1627696282352, "color":c0(8), "label": "2m 5s \/ 205.4 MB \/ CACHED"}, {"starting_time": 1627696282352, "ending_time": 1627696287423, "color":c1(8)}]},
+{"label": "assembly:quast (HVM2044)", "times": [{"starting_time": 1627696287467, "ending_time": 1627696317510, "color":c1(9)}, {"starting_time": 1627696317510, "ending_time": 1627696323370, "color":c0(9), "label": "39.9s \/ 85.9 MB \/ CACHED"}, {"starting_time": 1627696323370, "ending_time": 1627696327401, "color":c1(9)}]},
+{"label": "assembly:medaka_cpu (EC958)", "times": [{"starting_time": 1628211395139, "ending_time": 1628211399978, "color":c1(6)}, {"starting_time": 1628211399978, "ending_time": 1628211897978, "color":c2(6), "label": "8m 30s \/ 6.2 GB"}, {"starting_time": 1628211897978, "ending_time": 1628211905027, "color":c1(6)}]},
+{"label": "assembly:nextpolish (EC958)", "times": [{"starting_time": 1628211905112, "ending_time": 1628211914996, "color":c1(7)}, {"starting_time": 1628211914996, "ending_time": 1628212535393, "color":c2(7), "label": "10m 30s \/ 3.6 GB"}]},
+{"label": "assembly:fixstart (EC958)", "times": [{"starting_time": 1628212535087, "ending_time": 1628212545009, "color":c1(8)}, {"starting_time": 1628212545009, "ending_time": 1628212585009, "color":c2(8), "label": "50s \/ 208.7 MB"}, {"starting_time": 1628212585009, "ending_time": 1628212585057, "color":c1(8)}]},
+{"label": "assembly:quast (EC958)", "times": [{"starting_time": 1628212585102, "ending_time": 1628212590010, "color":c1(9)}, {"starting_time": 1628212590010, "ending_time": 1628212593744, "color":c2(9), "label": "14.9s \/ 88.8 MB"}, {"starting_time": 1628212593744, "ending_time": 1628212600051, "color":c1(9)}]}
+]
+
+
+function getTickFormat() {
+  var MIN = 1000 * 60
+  var HOUR = MIN * 60
+  var DAY = HOUR * 24
+  var delta = (endingMillis - beginningMillis)
+
+  if( delta < 2 * MIN ) {
+    return {
+      format: d3.time.format("%S"),
+      tickTime: d3.time.seconds,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * HOUR ) {
+    return {
+      format: d3.time.format("%M"),
+      tickTime: d3.time.minutes,
+      tickInterval: 5,
+      tickSize: 6
+    }
+  }
+
+  if( delta < 2 * DAY ) {
+    return {
+      format: d3.time.format("%H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 1,
+      tickSize: 6
+    }
+  }
+
+  if( delta <= 7 * DAY ) {
+    return {
+      format: d3.time.format("%b %e %H:%M"),
+      tickTime: d3.time.hours,
+      tickInterval: 6,
+      tickSize: 6
+    }
+  }
+
+  return {
+    format: d3.time.format("%b %e"),
+    tickTime: d3.time.days,
+    tickInterval: 1,
+    tickSize: 6
+  }
+}
+
+function getLabelMargin(scale) {
+    $('<span class="labelSpan" style="display: none"></span>').appendTo('body');
+
+    var labelMargin = 0
+    $.each(data, function (key, value) {
+      labelMargin = Math.max(labelMargin, $('.labelSpan').html(value.label).width());
+    });
+
+    $('.labelSpan').remove();
+
+    return (labelMargin * scale);
+}
+
+function render() {
+  handler=null;
+  $("#timeline").empty()
+  $('#label_elapsed').text(elapsed)
+  $('#label_launch').text( d3.time.format('%d %b %Y %H:%M')(new Date(beginningMillis)) )
+
+  var width = $(window).width();
+  var chart = d3.timeline()
+    .stack() // toggles graph stacking
+    .margin({left:getLabelMargin(0.85), right:100, top:0, bottom:0})
+    .tickFormat( getTickFormat() )
+    .rowSeperators('#f5f5f5')
+    .showTimeAxisTick()
+    ;
+  var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+}
+
+function hrz() {
+if( handler != null ) clearTimeout(handler)
+  handler = setTimeout(render, 150);
+}
+
+$(document).ready(render)
+$(window).resize(hrz); // resize the applet on window resize
+</script>
+</head>
+
+<body>
+<div>
+  <h3>Processes execution timeline</h3>
+  <p>
+    Launch time: <span id='label_launch'> </span><br>
+    Elapsed time: <span id='label_elapsed'> </span><br>
+    Legend: job wall time / memory usage (RAM) <span id='label_legend'> </span>
+  </p>
+  <div id="timeline"></div>
+</div>
+
+<div id='footer'>
+  Created with Nextflow -- <a href='http://www.nextflow.io' target='_blank'>http://nextflow.io</a>
+</div>
+
+<script type="text/javascript">
+var prot = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Clink href='" + prot + "fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css' %3E%3C/link%3E"));
+</script>
+</body>
+</html>
