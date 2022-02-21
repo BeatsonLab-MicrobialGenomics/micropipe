@@ -447,15 +447,19 @@ The table below summarised the basecalling run time depending on the resources u
 
 | Workflow element | Workflow element version | Workflow title |
 | ---------------- | :----------------------: | :------------: |
-| Guppy           |   See workflow version   | microPIPE |
-| qcat           |   See workflow version   | microPIPE |
-| pycoQC           |   See workflow version   | microPIPE |
-| Porechop           |   See workflow version   | microPIPE |
-| Japsa           |   See workflow version   | microPIPE |
-| Flye           |   See workflow version   | microPIPE |
-| Racon           |   See workflow version   | microPIPE |
-| Medaka           |   See workflow version   | microPIPE |
-| NextPolish           |   See workflow version   | microPIPE |
+| Guppy           |  v3.6.1   | microPIPE v0.9 |
+| qcat           |   v1.0.1   | microPIPE v0.9 |
+| rasusa           |   v0.3.0   | microPIPE v0.9 |
+| pycoQC           |   v2.5.0.23   | microPIPE v0.9 |
+| Porechop           |  v0.2.3  | microPIPE v0.9 |
+| Filtlong           |  v0.2.0  | microPIPE v0.9 |
+| Japsa           |  v1.9-01a   | microPIPE v0.9 |
+| Flye           |   v2.5   | microPIPE v0.9 |
+| Racon           |   v1.4.9   | microPIPE v0.9 |
+| Medaka           |   v0.10.0 | microPIPE v0.9 |
+| NextPolish           |   v1.1.0   | microPIPE v0.9 |
+| Circlator           |   v1.5.5   | microPIPE v0.9 |
+| QUAST           |   v5.0.2   | microPIPE v0.9 |
 
 -----
 
