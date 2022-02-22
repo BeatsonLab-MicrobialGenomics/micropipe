@@ -1,2 +1,0 @@
-sample_id,short_fastq_1,short_fastq_2,genome_size
-S24,test_data/S24EC_1P_test.fastq.gz,test_data/S24EC_2P_test.fastq.gz,5.5m
