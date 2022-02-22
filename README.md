@@ -354,8 +354,6 @@ S24EC_1P_test.fastq.gz | Illumina reads 1st pair
 S24EC_2P_test.fastq.gz | Illumina reads 2nd pair
 barcode01.fastq.gz | ONT fastq reads 
 samples_1.csv | sample sheet for running assembly-only pipeline
-samples_1_basecalling.csv | sample sheet for full pipeline
-samples_1_basecalling_single_isolate.csv | sample sheet for a single isolate
 
 To test the assembly-only pipeline, edit the `sample_1.csv` samplesheet to point to the correct test files. Then run:
 
