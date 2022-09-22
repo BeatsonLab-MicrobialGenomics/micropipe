@@ -34,8 +34,9 @@ out_dir=${dir}/results
 #nextflow main.nf --demultiplexing --samplesheet ${csv} --outdir ${out_dir} --fastq ${fastq_dir} --datadir ${datadir}
 
 #D) Assembly workflow (skip basecalling and demultiplexing step)
+fastq_dir=${dir}/fastq
 csv=${dir}/test_data/samples_1.csv
-nextflow main.nf --samplesheet ${csv} --outdir ${out_dir} --datadir ${datadir}
+nextflow main.nf --samplesheet ${csv} --outdir ${out_dir} --fastq ${fastq_dir} --datadir ${datadir}
 
 #to restart the pipeline if something failed, use the -resume flag after correcting the issue
 #nextflow main.nf -resume --samplesheet ${csv} --outdir ${out_dir} --datadir ${datadir}
